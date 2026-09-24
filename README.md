@@ -1,123 +1,124 @@
 <p align="center"><img src="logo.png" width="128" alt="MagicBox"></p>
 
-# MagicBox — Cutiuțele Magice
+# MagicBox
 
-**Română** · [English](README_EN.md)
+**English** · [Română](README_RO.md)
 
-**Versiunea 5.3.1** · Windows 10 / 11 · aplicația și documentele în română și în engleză
+**Version 5.3.1** · Windows 10 / 11 · the app and the documents in Romanian and English
 
-## Pentru profesori
+## For teachers
 
-MagicBox este o cutie cu senzori pentru ora de științe. Elevii măsoară cu ea
-temperatura, umiditatea, presiunea aerului, lumina, dioxidul de carbon și
-mișcarea. Aplicația de pe calculator arată măsurătorile pe grafice, în timp
-real, și conduce clasa prin experimente ghidate, instrumente de explorare și
-jocuri, de la clasa a II-a până la a XII-a.
+MagicBox is a sensor box for science lessons. Pupils use it to measure
+temperature, humidity, air pressure, light, carbon dioxide and motion. The
+application on the computer charts the measurements live and leads the class
+through guided experiments, explore tools and games, for pupils aged 7 to 19.
 
-**Fiecare activitate are un ghid pentru profesor și o fișă pentru elev, în
-română și în engleză.** Ghidul spune cum pregătiți ora, cum o desfășurați,
-ce întrebări puneți și unde greșesc de obicei elevii. În aplicație, butonul
-**Deschide ghidul** de pe fiecare activitate deschide ghidul potrivit.
+**Every activity has a teacher guide and a pupil sheet, in Romanian and in
+English.** The guide covers preparing the lesson, running it, the questions to
+ask and where pupils usually go wrong. In the app, the **Open guide** button
+on each activity opens the right one.
 
-### ⬇️ [Descărcați MagicBox 5.3.1 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.3.1/MagicBox_v5.3.1.zip)
+### ⬇️ [Download MagicBox 5.3.1 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.3.1/MagicBox_v5.3.1.zip)
 
-Arhiva conține tot: aplicația, ghidurile, fișele, firmware-ul cutiei și
-ghidul de instalare a firmware-ului, toate din aceeași versiune.
+The archive holds everything: the app, the guides, the sheets, the box
+firmware and its flashing guide, all from the same version.
 
 ---
 
-## 1. Instalarea aplicației
+## 1. Installing the app
 
-1. Dezarhivați ZIP-ul (clic dreapta → **Extract All…**) în **Documente** sau
-   pe un stick. Nu în *Program Files* și nu porniți aplicația direct din ZIP.
-   Țineți tot folderul `MagicBox` împreună.
-2. Porniți **`MagicBox.exe`**. Nu trebuie instalat nimic altceva.
-3. Dacă apare *„Windows a protejat computerul”*, apăsați **Mai multe
-   informații → Executați oricum**. Mesajul apare pentru că aplicația nu are
-   semnătură comercială, nu pentru că ar fi periculoasă.
-4. Când Windows întreabă despre rețea, bifați **Rețele private** și apăsați
-   **Permiteți accesul**. Altfel cutiile nu se pot conecta prin WiFi.
+1. Unzip it (right-click → **Extract All…**) into **Documents** or onto a
+   USB stick. Not into *Program Files*, and do not run the app from inside the
+   ZIP. Keep the whole `MagicBox` folder together.
+2. Run **`MagicBox.exe`**. Nothing else needs installing.
+3. If *"Windows protected your PC"* appears, click **More info → Run anyway**.
+   The app has no commercial signature; that is all the message means.
+4. When Windows asks about the network, tick **Private networks** and click
+   **Allow access**. Without it the boxes cannot connect over WiFi.
 
-**Prin USB:** folosiți un cablu *de date*. Dacă cutia nu apare în 10 secunde,
-instalați o dată driverul plăcii:
+The app starts in Romanian; switch to English in **Settings**.
+
+**Over USB:** use a *data* cable. If the box does not appear within
+10 seconds, install the board driver once:
 [CP210x](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
-sau [CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html).
+or [CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html).
 
-**Prin WiFi:** prima dată, cutia face o rețea **CutiaMagica-XXXX**. Conectați
-un telefon la ea și alegeți în pagina care se deschide rețeaua clasei.
-Calculatorul și cutiile trebuie să fie în aceeași rețea; aplicația le găsește
-singură. Dacă rețeaua școlii nu merge, folosiți hotspotul unui telefon.
+**Over WiFi:** the first time, the box opens a network called
+**CutiaMagica-XXXX**. Join it with a phone and pick the class network on the
+page that opens. The computer and the boxes must share a network; the app
+finds them on its own. If the school network does not work, use a phone
+hotspot.
 
-## 2. Firmware-ul cutiei
+## 2. The box firmware
 
-Cutiile care funcționează nu trebuie reprogramate. Firmware-ul se încarcă la
-o cutie nouă sau când aplicația vă avertizează că o cutie are firmware vechi.
-Pașii, cu imagini, sunt în
-[ghidul de instalare a firmware-ului](MagicBox/firmware/FLASHING_GUIDE_RO.pdf):
-circa 30 de minute prima dată, apoi 2–3 minute pe cutie. Folosiți varianta
-`serial_wifi_…` (USB și WiFi) din folderul [firmware](MagicBox/firmware).
+Boxes that work need no reflashing. Load the firmware onto a new box, or when
+the app warns that a box runs old firmware. The steps, with pictures, are in
+the [flashing guide](MagicBox/firmware/FLASHING_GUIDE.pdf): about 30 minutes the
+first time, then 2–3 minutes per box. Use the `serial_wifi_…` variant (USB and
+WiFi) from the [firmware](MagicBox/firmware) folder.
 
-Dacă o cutie așezată pe masă arată accelerația Z cam −1 g în loc de +1 g,
-bifați **Senzor de mișcare întors** la acea cutie, în **Setări → Numele
-cutiilor**. Nu e nevoie de alt firmware.
+If a box lying flat shows acceleration Z of about −1 g instead of +1 g, tick
+**Motion sensor upside down** for that box in **Settings → Box names**. No
+other firmware is needed.
 
-## 3. Documentele
+## 3. The documents
 
-| | Română | English |
+| | English | Română |
 |---|---|---|
-| Ghidurile pentru profesori | [ghiduri_profesor](MagicBox/docs/ro/ghiduri_profesor) | [teacher_guides](MagicBox/docs/en/teacher_guides) |
-| Fișele pentru elevi | [fise_elev](MagicBox/docs/ro/fise_elev) | [student_sheets](MagicBox/docs/en/student_sheets) |
-| Planul curricular (ce activitate la ce clasă) | [plan_curricular.pdf](MagicBox/docs/ro/plan_curricular.pdf) | [curriculum_plan.pdf](MagicBox/docs/en/curriculum_plan.pdf) |
-| Manualul tehnic și problemele frecvente | [manual_tehnic.pdf](MagicBox/docs/ro/manual_tehnic.pdf) | [technical_manual.pdf](MagicBox/docs/en/technical_manual.pdf) |
-| Instalarea firmware-ului | [FLASHING_GUIDE_RO.pdf](MagicBox/firmware/FLASHING_GUIDE_RO.pdf) | [FLASHING_GUIDE.pdf](MagicBox/firmware/FLASHING_GUIDE.pdf) |
+| Teacher guides | [teacher_guides](MagicBox/docs/en/teacher_guides) | [ghiduri_profesor](MagicBox/docs/ro/ghiduri_profesor) |
+| Pupil sheets | [student_sheets](MagicBox/docs/en/student_sheets) | [fise_elev](MagicBox/docs/ro/fise_elev) |
+| Curriculum plan (which activity for which grade) | [curriculum_plan.pdf](MagicBox/docs/en/curriculum_plan.pdf) | [plan_curricular.pdf](MagicBox/docs/ro/plan_curricular.pdf) |
+| Technical manual and troubleshooting | [technical_manual.pdf](MagicBox/docs/en/technical_manual.pdf) | [manual_tehnic.pdf](MagicBox/docs/ro/manual_tehnic.pdf) |
+| Flashing the firmware | [FLASHING_GUIDE.pdf](MagicBox/firmware/FLASHING_GUIDE.pdf) | [FLASHING_GUIDE_RO.pdf](MagicBox/firmware/FLASHING_GUIDE_RO.pdf) |
 
-Ce s-a schimbat de la o versiune la alta: [CHANGELOG.txt](MagicBox/CHANGELOG.txt)
-(aplicația) și [firmware/CHANGELOG.txt](MagicBox/firmware/CHANGELOG.txt).
+What changed between versions: [CHANGELOG.txt](MagicBox/CHANGELOG.txt) (the app)
+and [firmware/CHANGELOG.txt](MagicBox/firmware/CHANGELOG.txt).
 
 ---
 
-## Activitățile
+## The activities
 
-Toate PDF-urile se deschid și direct aici, pe GitHub, fără să descărcați nimic.
+Every PDF also opens right here on GitHub, without downloading anything.
+Grades follow the Romanian school system (II = age 8, XII = age 18).
 
-### Experimente ghidate
+### Guided experiments
 
-| Activitate | Clasele | Ghidul profesorului | Fișa elevului |
+| Activity | Grades | Teacher guide | Pupil sheet |
 |---|---|---|---|
-| 🌞 Lumina de pretutindeni | II–IV | [RO](MagicBox/docs/ro/ghiduri_profesor/lumina_de_pretutindeni.pdf) · [EN](MagicBox/docs/en/teacher_guides/light_is_everywhere.pdf) | [RO](MagicBox/docs/ro/fise_elev/lumina_de_pretutindeni.pdf) · [EN](MagicBox/docs/en/student_sheets/light_is_everywhere.pdf) |
-| 🌡️ Termometrul magic | II–IV | [RO](MagicBox/docs/ro/ghiduri_profesor/termometrul_magic.pdf) · [EN](MagicBox/docs/en/teacher_guides/magic_thermometer.pdf) | [RO](MagicBox/docs/ro/fise_elev/termometrul_magic.pdf) · [EN](MagicBox/docs/en/student_sheets/magic_thermometer.pdf) |
-| 🫁 Aerul pe care îl respirăm | II–IV | [RO](MagicBox/docs/ro/ghiduri_profesor/aerul_pe_care_il_respiram.pdf) · [EN](MagicBox/docs/en/teacher_guides/air_we_breathe.pdf) | [RO](MagicBox/docs/ro/fise_elev/aerul_pe_care_il_respiram.pdf) · [EN](MagicBox/docs/en/student_sheets/air_we_breathe.pdf) |
-| 🏠 Poluarea de interior | V–VIII | [RO](MagicBox/docs/ro/ghiduri_profesor/poluarea_de_interior.pdf) · [EN](MagicBox/docs/en/teacher_guides/indoor_pollution.pdf) | [RO](MagicBox/docs/ro/fise_elev/poluarea_de_interior.pdf) · [EN](MagicBox/docs/en/student_sheets/indoor_pollution.pdf) |
-| 🌿 CO₂ și fotosinteza | X–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/co2_si_fotosinteza.pdf) · [EN](MagicBox/docs/en/teacher_guides/co2_and_photosynthesis.pdf) | [RO](MagicBox/docs/ro/fise_elev/co2_si_fotosinteza.pdf) · [EN](MagicBox/docs/en/student_sheets/co2_and_photosynthesis.pdf) |
-| 📊 Seismograful | V–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/seismograful.pdf) · [EN](MagicBox/docs/en/teacher_guides/seismometer.pdf) | [RO](MagicBox/docs/ro/fise_elev/seismograful.pdf) · [EN](MagicBox/docs/en/student_sheets/seismometer.pdf) |
-| ✈️ Zbor drept | II–IV | [RO](MagicBox/docs/ro/ghiduri_profesor/zbor_drept.pdf) · [EN](MagicBox/docs/en/teacher_guides/flying_straight.pdf) | [RO](MagicBox/docs/ro/fise_elev/zbor_drept.pdf) · [EN](MagicBox/docs/en/student_sheets/flying_straight.pdf) |
-| ⚖️ Cutia în echilibru | II–IV | [RO](MagicBox/docs/ro/ghiduri_profesor/cutia_in_echilibru.pdf) · [EN](MagicBox/docs/en/teacher_guides/box_in_balance.pdf) | [RO](MagicBox/docs/ro/fise_elev/cutia_in_echilibru.pdf) · [EN](MagicBox/docs/en/student_sheets/box_in_balance.pdf) |
-| ⛰️ Presiune și altitudine | V–VIII | [RO](MagicBox/docs/ro/ghiduri_profesor/presiune_si_altitudine.pdf) · [EN](MagicBox/docs/en/teacher_guides/pressure_and_altitude.pdf) | [RO](MagicBox/docs/ro/fise_elev/presiune_si_altitudine.pdf) · [EN](MagicBox/docs/en/student_sheets/pressure_and_altitude.pdf) |
-| 🌆 Insule termice | V–VIII | [RO](MagicBox/docs/ro/ghiduri_profesor/insule_termice.pdf) · [EN](MagicBox/docs/en/teacher_guides/urban_heat_islands.pdf) | [RO](MagicBox/docs/ro/fise_elev/insule_termice.pdf) · [EN](MagicBox/docs/en/student_sheets/urban_heat_islands.pdf) |
-| ⚡ Panouri solare | IX–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/panouri_solare.pdf) · [EN](MagicBox/docs/en/teacher_guides/solar_panels.pdf) | [RO](MagicBox/docs/ro/fise_elev/panouri_solare.pdf) · [EN](MagicBox/docs/en/student_sheets/solar_panels.pdf) |
-| 🔥 Convecția aerului | V–VIII | [RO](MagicBox/docs/ro/ghiduri_profesor/convectia_aerului.pdf) · [EN](MagicBox/docs/en/teacher_guides/air_convection.pdf) | [RO](MagicBox/docs/ro/fise_elev/convectia_aerului.pdf) · [EN](MagicBox/docs/en/student_sheets/air_convection.pdf) |
-| 💧 Ciclul apei | V–VIII | [RO](MagicBox/docs/ro/ghiduri_profesor/ciclul_apei.pdf) · [EN](MagicBox/docs/en/teacher_guides/water_cycle.pdf) | [RO](MagicBox/docs/ro/fise_elev/ciclul_apei.pdf) · [EN](MagicBox/docs/en/student_sheets/water_cycle.pdf) |
-| 🌐 Fizica atmosferei | IX–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/fizica_atmosferei.pdf) · [EN](MagicBox/docs/en/teacher_guides/physics_of_the_atmosphere.pdf) | [RO](MagicBox/docs/ro/fise_elev/fizica_atmosferei.pdf) · [EN](MagicBox/docs/en/student_sheets/physics_of_the_atmosphere.pdf) |
-| ⚗️ Legea Beer–Lambert | X–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/legea_beer_lambert.pdf) · [EN](MagicBox/docs/en/teacher_guides/beer_lambert_law.pdf) | [RO](MagicBox/docs/ro/fise_elev/legea_beer_lambert.pdf) · [EN](MagicBox/docs/en/student_sheets/beer_lambert_law.pdf) |
+| 🌞 Light is Everywhere | II–IV | [EN](MagicBox/docs/en/teacher_guides/light_is_everywhere.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/lumina_de_pretutindeni.pdf) | [EN](MagicBox/docs/en/student_sheets/light_is_everywhere.pdf) · [RO](MagicBox/docs/ro/fise_elev/lumina_de_pretutindeni.pdf) |
+| 🌡️ The Magic Thermometer | II–IV | [EN](MagicBox/docs/en/teacher_guides/magic_thermometer.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/termometrul_magic.pdf) | [EN](MagicBox/docs/en/student_sheets/magic_thermometer.pdf) · [RO](MagicBox/docs/ro/fise_elev/termometrul_magic.pdf) |
+| 🫁 The Air We Breathe | II–IV | [EN](MagicBox/docs/en/teacher_guides/air_we_breathe.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/aerul_pe_care_il_respiram.pdf) | [EN](MagicBox/docs/en/student_sheets/air_we_breathe.pdf) · [RO](MagicBox/docs/ro/fise_elev/aerul_pe_care_il_respiram.pdf) |
+| 🏠 Indoor Pollution | V–VIII | [EN](MagicBox/docs/en/teacher_guides/indoor_pollution.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/poluarea_de_interior.pdf) | [EN](MagicBox/docs/en/student_sheets/indoor_pollution.pdf) · [RO](MagicBox/docs/ro/fise_elev/poluarea_de_interior.pdf) |
+| 🌿 CO₂ and Photosynthesis | X–XII | [EN](MagicBox/docs/en/teacher_guides/co2_and_photosynthesis.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/co2_si_fotosinteza.pdf) | [EN](MagicBox/docs/en/student_sheets/co2_and_photosynthesis.pdf) · [RO](MagicBox/docs/ro/fise_elev/co2_si_fotosinteza.pdf) |
+| 📊 The Seismometer | V–XII | [EN](MagicBox/docs/en/teacher_guides/seismometer.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/seismograful.pdf) | [EN](MagicBox/docs/en/student_sheets/seismometer.pdf) · [RO](MagicBox/docs/ro/fise_elev/seismograful.pdf) |
+| ✈️ Flying Straight | II–IV | [EN](MagicBox/docs/en/teacher_guides/flying_straight.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/zbor_drept.pdf) | [EN](MagicBox/docs/en/student_sheets/flying_straight.pdf) · [RO](MagicBox/docs/ro/fise_elev/zbor_drept.pdf) |
+| ⚖️ The Box in Balance | II–IV | [EN](MagicBox/docs/en/teacher_guides/box_in_balance.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/cutia_in_echilibru.pdf) | [EN](MagicBox/docs/en/student_sheets/box_in_balance.pdf) · [RO](MagicBox/docs/ro/fise_elev/cutia_in_echilibru.pdf) |
+| ⛰️ Pressure and Altitude | V–VIII | [EN](MagicBox/docs/en/teacher_guides/pressure_and_altitude.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/presiune_si_altitudine.pdf) | [EN](MagicBox/docs/en/student_sheets/pressure_and_altitude.pdf) · [RO](MagicBox/docs/ro/fise_elev/presiune_si_altitudine.pdf) |
+| 🌆 Urban Heat Islands | V–VIII | [EN](MagicBox/docs/en/teacher_guides/urban_heat_islands.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/insule_termice.pdf) | [EN](MagicBox/docs/en/student_sheets/urban_heat_islands.pdf) · [RO](MagicBox/docs/ro/fise_elev/insule_termice.pdf) |
+| ⚡ Solar Panels | IX–XII | [EN](MagicBox/docs/en/teacher_guides/solar_panels.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/panouri_solare.pdf) | [EN](MagicBox/docs/en/student_sheets/solar_panels.pdf) · [RO](MagicBox/docs/ro/fise_elev/panouri_solare.pdf) |
+| 🔥 Air Convection | V–VIII | [EN](MagicBox/docs/en/teacher_guides/air_convection.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/convectia_aerului.pdf) | [EN](MagicBox/docs/en/student_sheets/air_convection.pdf) · [RO](MagicBox/docs/ro/fise_elev/convectia_aerului.pdf) |
+| 💧 The Water Cycle | V–VIII | [EN](MagicBox/docs/en/teacher_guides/water_cycle.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/ciclul_apei.pdf) | [EN](MagicBox/docs/en/student_sheets/water_cycle.pdf) · [RO](MagicBox/docs/ro/fise_elev/ciclul_apei.pdf) |
+| 🌐 Physics of the Atmosphere | IX–XII | [EN](MagicBox/docs/en/teacher_guides/physics_of_the_atmosphere.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/fizica_atmosferei.pdf) | [EN](MagicBox/docs/en/student_sheets/physics_of_the_atmosphere.pdf) · [RO](MagicBox/docs/ro/fise_elev/fizica_atmosferei.pdf) |
+| ⚗️ The Beer–Lambert Law | X–XII | [EN](MagicBox/docs/en/teacher_guides/beer_lambert_law.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/legea_beer_lambert.pdf) | [EN](MagicBox/docs/en/student_sheets/beer_lambert_law.pdf) · [RO](MagicBox/docs/ro/fise_elev/legea_beer_lambert.pdf) |
 
-### Instrumente de explorare
+### Explore tools
 
-| Activitate | Clasele | Ghidul profesorului | Fișa elevului |
+| Activity | Grades | Teacher guide | Pupil sheet |
 |---|---|---|---|
-| 📌 Carnetul de măsurători | IV–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/carnetul_de_masuratori.pdf) · [EN](MagicBox/docs/en/teacher_guides/measurement_notebook.pdf) | [RO](MagicBox/docs/ro/fise_elev/carnetul_de_masuratori.pdf) · [EN](MagicBox/docs/en/student_sheets/measurement_notebook.pdf) |
-| 🌦️ Stația meteo | V–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/statia_meteo.pdf) · [EN](MagicBox/docs/en/teacher_guides/weather_station.pdf) | [RO](MagicBox/docs/ro/fise_elev/statia_meteo.pdf) · [EN](MagicBox/docs/en/student_sheets/weather_station.pdf) |
-| 🌬️ Calitatea aerului | V–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/calitatea_aerului.pdf) · [EN](MagicBox/docs/en/teacher_guides/air_quality.pdf) | [RO](MagicBox/docs/ro/fise_elev/calitatea_aerului.pdf) · [EN](MagicBox/docs/en/student_sheets/air_quality.pdf) |
-| ☀️ Energia solară | VI–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/energia_solara.pdf) · [EN](MagicBox/docs/en/teacher_guides/solar_energy.pdf) | [RO](MagicBox/docs/ro/fise_elev/energia_solara.pdf) · [EN](MagicBox/docs/en/student_sheets/solar_energy.pdf) |
-| 📐 Seismologie | V–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/seismologie.pdf) · [EN](MagicBox/docs/en/teacher_guides/seismology.pdf) | [RO](MagicBox/docs/ro/fise_elev/seismologie.pdf) · [EN](MagicBox/docs/en/student_sheets/seismology.pdf) |
-| 🌆 Insule termice cu mai multe cutii | V–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/insule_termice_cu_mai_multe_cutii.pdf) · [EN](MagicBox/docs/en/teacher_guides/heat_islands_with_several_boxes.pdf) | [RO](MagicBox/docs/ro/fise_elev/insule_termice_cu_mai_multe_cutii.pdf) · [EN](MagicBox/docs/en/student_sheets/heat_islands_with_several_boxes.pdf) |
-| 🌿 Efectul de seră | V–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/efectul_de_sera.pdf) · [EN](MagicBox/docs/en/teacher_guides/greenhouse_effect.pdf) | [RO](MagicBox/docs/ro/fise_elev/efectul_de_sera.pdf) · [EN](MagicBox/docs/en/student_sheets/greenhouse_effect.pdf) |
-| 🔬 Spectroscopie | IX–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/spectroscopie.pdf) · [EN](MagicBox/docs/en/teacher_guides/spectroscopy.pdf) | [RO](MagicBox/docs/ro/fise_elev/spectroscopie.pdf) · [EN](MagicBox/docs/en/student_sheets/spectroscopy.pdf) |
+| 📌 Measurement Notebook | IV–XII | [EN](MagicBox/docs/en/teacher_guides/measurement_notebook.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/carnetul_de_masuratori.pdf) | [EN](MagicBox/docs/en/student_sheets/measurement_notebook.pdf) · [RO](MagicBox/docs/ro/fise_elev/carnetul_de_masuratori.pdf) |
+| 🌦️ Weather Station | V–XII | [EN](MagicBox/docs/en/teacher_guides/weather_station.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/statia_meteo.pdf) | [EN](MagicBox/docs/en/student_sheets/weather_station.pdf) · [RO](MagicBox/docs/ro/fise_elev/statia_meteo.pdf) |
+| 🌬️ Air Quality | V–XII | [EN](MagicBox/docs/en/teacher_guides/air_quality.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/calitatea_aerului.pdf) | [EN](MagicBox/docs/en/student_sheets/air_quality.pdf) · [RO](MagicBox/docs/ro/fise_elev/calitatea_aerului.pdf) |
+| ☀️ Solar Energy | VI–XII | [EN](MagicBox/docs/en/teacher_guides/solar_energy.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/energia_solara.pdf) | [EN](MagicBox/docs/en/student_sheets/solar_energy.pdf) · [RO](MagicBox/docs/ro/fise_elev/energia_solara.pdf) |
+| 📐 Seismology | V–XII | [EN](MagicBox/docs/en/teacher_guides/seismology.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/seismologie.pdf) | [EN](MagicBox/docs/en/student_sheets/seismology.pdf) · [RO](MagicBox/docs/ro/fise_elev/seismologie.pdf) |
+| 🌆 Heat Islands with Several Boxes | V–XII | [EN](MagicBox/docs/en/teacher_guides/heat_islands_with_several_boxes.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/insule_termice_cu_mai_multe_cutii.pdf) | [EN](MagicBox/docs/en/student_sheets/heat_islands_with_several_boxes.pdf) · [RO](MagicBox/docs/ro/fise_elev/insule_termice_cu_mai_multe_cutii.pdf) |
+| 🌿 The Greenhouse Effect | V–XII | [EN](MagicBox/docs/en/teacher_guides/greenhouse_effect.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/efectul_de_sera.pdf) | [EN](MagicBox/docs/en/student_sheets/greenhouse_effect.pdf) · [RO](MagicBox/docs/ro/fise_elev/efectul_de_sera.pdf) |
+| 🔬 Spectroscopy | IX–XII | [EN](MagicBox/docs/en/teacher_guides/spectroscopy.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/spectroscopie.pdf) | [EN](MagicBox/docs/en/student_sheets/spectroscopy.pdf) · [RO](MagicBox/docs/ro/fise_elev/spectroscopie.pdf) |
 
-### Jocuri
+### Games
 
-| Activitate | Clasele | Ghidul profesorului | Fișa elevului |
+| Activity | Grades | Teacher guide | Pupil sheet |
 |---|---|---|---|
-| 🎮 Printre nori | II–VIII | [RO](MagicBox/docs/ro/ghiduri_profesor/printre_nori.pdf) · [EN](MagicBox/docs/en/teacher_guides/among_the_clouds.pdf) | [RO](MagicBox/docs/ro/fise_elev/printre_nori.pdf) · [EN](MagicBox/docs/en/student_sheets/among_the_clouds.pdf) |
-| 🎮 Cutremur! | IV–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/cutremur.pdf) · [EN](MagicBox/docs/en/teacher_guides/earthquake.pdf) | [RO](MagicBox/docs/ro/fise_elev/cutremur.pdf) · [EN](MagicBox/docs/en/student_sheets/earthquake.pdf) |
-| 🎮 Rezonanța | VI–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/rezonanta.pdf) · [EN](MagicBox/docs/en/teacher_guides/resonance.pdf) | [RO](MagicBox/docs/ro/fise_elev/rezonanta.pdf) · [EN](MagicBox/docs/en/student_sheets/resonance.pdf) |
-| 🎯 Ținta giroscopică | V–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/tinta_giroscopica.pdf) · [EN](MagicBox/docs/en/teacher_guides/gyro_target.pdf) | [RO](MagicBox/docs/ro/fise_elev/tinta_giroscopica.pdf) · [EN](MagicBox/docs/en/student_sheets/gyro_target.pdf) |
+| 🎮 Among the Clouds | II–VIII | [EN](MagicBox/docs/en/teacher_guides/among_the_clouds.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/printre_nori.pdf) | [EN](MagicBox/docs/en/student_sheets/among_the_clouds.pdf) · [RO](MagicBox/docs/ro/fise_elev/printre_nori.pdf) |
+| 🎮 Earthquake! | IV–XII | [EN](MagicBox/docs/en/teacher_guides/earthquake.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/cutremur.pdf) | [EN](MagicBox/docs/en/student_sheets/earthquake.pdf) · [RO](MagicBox/docs/ro/fise_elev/cutremur.pdf) |
+| 🎮 Resonance | VI–XII | [EN](MagicBox/docs/en/teacher_guides/resonance.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/rezonanta.pdf) | [EN](MagicBox/docs/en/student_sheets/resonance.pdf) · [RO](MagicBox/docs/ro/fise_elev/rezonanta.pdf) |
+| 🎯 Gyro Target | V–XII | [EN](MagicBox/docs/en/teacher_guides/gyro_target.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/tinta_giroscopica.pdf) | [EN](MagicBox/docs/en/student_sheets/gyro_target.pdf) · [RO](MagicBox/docs/ro/fise_elev/tinta_giroscopica.pdf) |
