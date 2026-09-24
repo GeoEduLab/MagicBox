@@ -1,13 +1,50 @@
 ﻿FIRMWARE CHANGELOG
 ==================
 
-Firmware for the ESP32 box: serial_wifi_v2_2_5, which drives all four
+Firmware for the ESP32 box: serial_wifi_v2_2_6, which drives all four
 sensors and talks to the application over both USB and WiFi. Newest version
 first.
 
 A USB-only variant, serial_only_v1_3_4, is kept in the project for boxes
 that never use WiFi. Its version numbers advance in step with the WiFi
 firmware and each entry below says when a change applies to it too.
+
+v2.2.6 — 24 September 2026
+--------------------------
+
+WiFi boxes only; serial_only stays at v1.3.4, since it has no WiFi.
+
+Changed:
+
+  - The box's own setup network is now called MagicBox-XXXX (it was
+    CutiaMagica-XXXX), and its setup page is in English and titled MagicBox,
+    like the application. XXXX are still the last four characters of the box ID.
+  - The setup page lists the networks the box can actually see, strongest
+    first, with signal dots and a padlock for networks with a password; the
+    network already saved is preselected. It also says plainly that the box
+    sees 2.4 GHz networks only: a router with two bands has to keep its
+    2.4 GHz band switched on. A "Show password" tick helps when typing on a
+    phone.
+  - **A box switched on before the router joins by itself once the router is
+    up.** While nobody is connected to its setup page, the box tries the saved
+    network again every 2 minutes. Before, it stayed on the setup page until it
+    was switched off and on.
+  - When a box cannot join, the serial line now says why: network not found
+    (out of range, or a 5 GHz-only network), wrong password, or no answer,
+    followed by the list of networks it can see. Useful with the Serial
+    Monitor of the Arduino IDE when a box refuses the classroom WiFi.
+  - The setup page shows a box, not a microscope, next to the box's name, and
+    announces itself to phones that support it (DHCP option 114). Some phones,
+    Samsung among them, still only say "Internet may not be available": tap
+    "Connect only this time" and open 192.168.4.1 in the browser.
+
+Fixed:
+
+  - A network whose name contains an apostrophe or  broke the setup page
+    (the name could not be picked from the list). Names are now shown and sent
+    exactly as they are.
+  - Serial messages no longer contain long dashes, which showed as "???" in
+    some terminals.
 
 v2.2.5 (and serial_only v1.3.4) — 23 September 2026
 ---------------------------------------------------

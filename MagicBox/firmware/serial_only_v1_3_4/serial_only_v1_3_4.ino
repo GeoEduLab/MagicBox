@@ -1,5 +1,5 @@
 /*
- * Cutiuțele Magice — Firmware v1: Serial Only
+ * MagicBox — Firmware v1: Serial Only
  *
  * Sensors : VEML7700 (light) · BME280 (T/H/P) · MPU-6500 (IMU)
  *           SCD41 (CO₂ + T/H), from 1.3.4 — read every 5 s (hardware

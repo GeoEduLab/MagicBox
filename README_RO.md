@@ -1,10 +1,10 @@
 <p align="center"><img src="logo.png" width="128" alt="MagicBox"></p>
 
-# MagicBox — Cutiuțele Magice
+# MagicBox
 
 [English](README.md) · **Română**
 
-**Versiunea 5.3.1** · Windows 10 / 11 · aplicația și documentele în română și în engleză
+**Versiunea 5.4** · Windows 10 / 11 · aplicația și documentele în română și în engleză
 
 ## Pentru profesori
 
@@ -19,7 +19,7 @@ română și în engleză.** Ghidul spune cum pregătiți ora, cum o desfășura
 ce întrebări puneți și unde greșesc de obicei elevii. În aplicație, butonul
 **Deschide ghidul** de pe fiecare activitate deschide ghidul potrivit.
 
-### ⬇️ [Descărcați MagicBox 5.3.1 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.3.1/MagicBox_v5.3.1.zip)
+### ⬇️ [Descărcați MagicBox 5.4 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4/MagicBox_v5.4.zip)
 
 Arhiva conține tot: aplicația, ghidurile, fișele, firmware-ul cutiei și
 ghidul de instalare a firmware-ului, toate din aceeași versiune.
@@ -33,20 +33,31 @@ ghidul de instalare a firmware-ului, toate din aceeași versiune.
    Țineți tot folderul `MagicBox` împreună.
 2. Porniți **`MagicBox.exe`**. Nu trebuie instalat nimic altceva.
 3. Dacă apare *„Windows a protejat computerul”*, apăsați **Mai multe
-   informații → Executați oricum**. Mesajul apare pentru că aplicația nu are
+   informații → Executare oricum**. Mesajul apare pentru că aplicația nu are
    semnătură comercială, nu pentru că ar fi periculoasă.
 4. Când Windows întreabă despre rețea, bifați **Rețele private** și apăsați
    **Permiteți accesul**. Altfel cutiile nu se pot conecta prin WiFi.
+
+Pașii de la instalare la prima cutie pe ecran, cu un tabel „ce vedeți → ce
+faceți”, sunt în [Primii pași](MagicBox/docs/ro/primii_pasi.pdf) (două pagini).
 
 **Prin USB:** folosiți un cablu *de date*. Dacă cutia nu apare în 10 secunde,
 instalați o dată driverul plăcii:
 [CP210x](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
 sau [CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html).
 
-**Prin WiFi:** prima dată, cutia face o rețea **CutiaMagica-XXXX**. Conectați
-un telefon la ea și alegeți în pagina care se deschide rețeaua clasei.
+**Prin WiFi:** prima dată, cutia face o rețea **MagicBox-XXXX**
+(**CutiaMagica-XXXX** la firmware mai vechi de 2.2.6). Conectați un telefon la
+ea (dacă telefonul spune că rețeaua nu are internet, alegeți să rămâneți
+conectat, de exemplu *Connect only this time*) și alegeți rețeaua clasei în
+pagina de configurare; dacă pagina nu se deschide singură, mergeți la
+http://192.168.4.1. Cutia vede doar rețele de 2,4 GHz.
 Calculatorul și cutiile trebuie să fie în aceeași rețea; aplicația le găsește
 singură. Dacă rețeaua școlii nu merge, folosiți hotspotul unui telefon.
+
+**Senzorii:** cutia are trei socluri pentru patru senzori, deci unul lipsește
+mereu, iar la pornire apare ca `FAIL`: e normal. Cu cutia oprită, puneți
+senzorul de care are nevoie activitatea (jocurile cer senzorul de mișcare).
 
 ## 2. Firmware-ul cutiei
 
@@ -67,6 +78,8 @@ cutiilor**. Nu e nevoie de alt firmware.
 |---|---|---|
 | Ghidurile pentru profesori | [ghiduri_profesor](MagicBox/docs/ro/ghiduri_profesor) | [teacher_guides](MagicBox/docs/en/teacher_guides) |
 | Fișele pentru elevi | [fise_elev](MagicBox/docs/ro/fise_elev) | [student_sheets](MagicBox/docs/en/student_sheets) |
+| Primii pași: instalare, conectare, probleme frecvente | [primii_pasi.pdf](MagicBox/docs/ro/primii_pasi.pdf) | [first_steps.pdf](MagicBox/docs/en/first_steps.pdf) |
+| Activitățile pe clase și discipline (o pagină) | [activitatile_pe_clase_si_discipline.pdf](MagicBox/docs/ro/activitatile_pe_clase_si_discipline.pdf) | [activities_by_grade_and_subject.pdf](MagicBox/docs/en/activities_by_grade_and_subject.pdf) |
 | Planul curricular (ce activitate la ce clasă) | [plan_curricular.pdf](MagicBox/docs/ro/plan_curricular.pdf) | [curriculum_plan.pdf](MagicBox/docs/en/curriculum_plan.pdf) |
 | Manualul tehnic și problemele frecvente | [manual_tehnic.pdf](MagicBox/docs/ro/manual_tehnic.pdf) | [technical_manual.pdf](MagicBox/docs/en/technical_manual.pdf) |
 | Instalarea firmware-ului | [FLASHING_GUIDE_RO.pdf](MagicBox/firmware/FLASHING_GUIDE_RO.pdf) | [FLASHING_GUIDE.pdf](MagicBox/firmware/FLASHING_GUIDE.pdf) |
@@ -119,5 +132,5 @@ Toate PDF-urile se deschid și direct aici, pe GitHub, fără să descărcați n
 |---|---|---|---|
 | 🎮 Printre nori | II–VIII | [RO](MagicBox/docs/ro/ghiduri_profesor/printre_nori.pdf) · [EN](MagicBox/docs/en/teacher_guides/among_the_clouds.pdf) | [RO](MagicBox/docs/ro/fise_elev/printre_nori.pdf) · [EN](MagicBox/docs/en/student_sheets/among_the_clouds.pdf) |
 | 🎮 Cutremur! | IV–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/cutremur.pdf) · [EN](MagicBox/docs/en/teacher_guides/earthquake.pdf) | [RO](MagicBox/docs/ro/fise_elev/cutremur.pdf) · [EN](MagicBox/docs/en/student_sheets/earthquake.pdf) |
-| 🎮 Rezonanța | VI–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/rezonanta.pdf) · [EN](MagicBox/docs/en/teacher_guides/resonance.pdf) | [RO](MagicBox/docs/ro/fise_elev/rezonanta.pdf) · [EN](MagicBox/docs/en/student_sheets/resonance.pdf) |
+| 🎮 Rezonanța | XI | [RO](MagicBox/docs/ro/ghiduri_profesor/rezonanta.pdf) · [EN](MagicBox/docs/en/teacher_guides/resonance.pdf) | [RO](MagicBox/docs/ro/fise_elev/rezonanta.pdf) · [EN](MagicBox/docs/en/student_sheets/resonance.pdf) |
 | 🎯 Ținta giroscopică | V–XII | [RO](MagicBox/docs/ro/ghiduri_profesor/tinta_giroscopica.pdf) · [EN](MagicBox/docs/en/teacher_guides/gyro_target.pdf) | [RO](MagicBox/docs/ro/fise_elev/tinta_giroscopica.pdf) · [EN](MagicBox/docs/en/student_sheets/gyro_target.pdf) |

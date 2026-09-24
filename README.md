@@ -4,7 +4,7 @@
 
 **English** · [Română](README_RO.md)
 
-**Version 5.3.1** · Windows 10 / 11 · the app and the documents in Romanian and English
+**Version 5.4** · Windows 10 / 11 · the app and the documents in Romanian and English
 
 ## For teachers
 
@@ -18,7 +18,7 @@ English.** The guide covers preparing the lesson, running it, the questions to
 ask and where pupils usually go wrong. In the app, the **Open guide** button
 on each activity opens the right one.
 
-### ⬇️ [Download MagicBox 5.3.1 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.3.1/MagicBox_v5.3.1.zip)
+### ⬇️ [Download MagicBox 5.4 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4/MagicBox_v5.4.zip)
 
 The archive holds everything: the app, the guides, the sheets, the box
 firmware and its flashing guide, all from the same version.
@@ -36,7 +36,10 @@ firmware and its flashing guide, all from the same version.
 4. When Windows asks about the network, tick **Private networks** and click
    **Allow access**. Without it the boxes cannot connect over WiFi.
 
-The app starts in Romanian; switch to English in **Settings**.
+The app starts in Romanian; switch to English in **Setări → Limba și
+afișarea → Limba:** (Settings → Language), then restart it. The steps from the
+download to the first box on screen, with a "what you see → what to do" table,
+are in [First steps](MagicBox/docs/en/first_steps.pdf) (two pages).
 
 **Over USB:** use a *data* cable. If the box does not appear within
 10 seconds, install the board driver once:
@@ -44,10 +47,18 @@ The app starts in Romanian; switch to English in **Settings**.
 or [CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html).
 
 **Over WiFi:** the first time, the box opens a network called
-**CutiaMagica-XXXX**. Join it with a phone and pick the class network on the
-page that opens. The computer and the boxes must share a network; the app
+**MagicBox-XXXX** (**CutiaMagica-XXXX** on firmware older than 2.2.6). Join it
+with a phone (if it says the network has no internet, choose to stay
+connected, e.g. *Connect only this time*) and pick the class network on the
+setup page; if the page does not open by itself, go to http://192.168.4.1.
+The box sees only 2.4 GHz networks. The computer and the boxes must share a network; the app
 finds them on its own. If the school network does not work, use a phone
 hotspot.
+
+**Sensors:** the box has three sockets for four sensors, so one is always
+left out, and it shows as `FAIL` at power-on: that is normal. With the box
+switched off, plug in the sensor the activity needs (the games need the
+motion sensor).
 
 ## 2. The box firmware
 
@@ -67,6 +78,8 @@ other firmware is needed.
 |---|---|---|
 | Teacher guides | [teacher_guides](MagicBox/docs/en/teacher_guides) | [ghiduri_profesor](MagicBox/docs/ro/ghiduri_profesor) |
 | Pupil sheets | [student_sheets](MagicBox/docs/en/student_sheets) | [fise_elev](MagicBox/docs/ro/fise_elev) |
+| First steps: installing, connecting, common problems | [first_steps.pdf](MagicBox/docs/en/first_steps.pdf) | [primii_pasi.pdf](MagicBox/docs/ro/primii_pasi.pdf) |
+| Activities by grade and subject (one page) | [activities_by_grade_and_subject.pdf](MagicBox/docs/en/activities_by_grade_and_subject.pdf) | [activitatile_pe_clase_si_discipline.pdf](MagicBox/docs/ro/activitatile_pe_clase_si_discipline.pdf) |
 | Curriculum plan (which activity for which grade) | [curriculum_plan.pdf](MagicBox/docs/en/curriculum_plan.pdf) | [plan_curricular.pdf](MagicBox/docs/ro/plan_curricular.pdf) |
 | Technical manual and troubleshooting | [technical_manual.pdf](MagicBox/docs/en/technical_manual.pdf) | [manual_tehnic.pdf](MagicBox/docs/ro/manual_tehnic.pdf) |
 | Flashing the firmware | [FLASHING_GUIDE.pdf](MagicBox/firmware/FLASHING_GUIDE.pdf) | [FLASHING_GUIDE_RO.pdf](MagicBox/firmware/FLASHING_GUIDE_RO.pdf) |
@@ -120,5 +133,5 @@ Grades follow the Romanian school system (II = age 8, XII = age 18).
 |---|---|---|---|
 | 🎮 Among the Clouds | II–VIII | [EN](MagicBox/docs/en/teacher_guides/among_the_clouds.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/printre_nori.pdf) | [EN](MagicBox/docs/en/student_sheets/among_the_clouds.pdf) · [RO](MagicBox/docs/ro/fise_elev/printre_nori.pdf) |
 | 🎮 Earthquake! | IV–XII | [EN](MagicBox/docs/en/teacher_guides/earthquake.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/cutremur.pdf) | [EN](MagicBox/docs/en/student_sheets/earthquake.pdf) · [RO](MagicBox/docs/ro/fise_elev/cutremur.pdf) |
-| 🎮 Resonance | VI–XII | [EN](MagicBox/docs/en/teacher_guides/resonance.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/rezonanta.pdf) | [EN](MagicBox/docs/en/student_sheets/resonance.pdf) · [RO](MagicBox/docs/ro/fise_elev/rezonanta.pdf) |
+| 🎮 Resonance | XI | [EN](MagicBox/docs/en/teacher_guides/resonance.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/rezonanta.pdf) | [EN](MagicBox/docs/en/student_sheets/resonance.pdf) · [RO](MagicBox/docs/ro/fise_elev/rezonanta.pdf) |
 | 🎯 Gyro Target | V–XII | [EN](MagicBox/docs/en/teacher_guides/gyro_target.pdf) · [RO](MagicBox/docs/ro/ghiduri_profesor/tinta_giroscopica.pdf) | [EN](MagicBox/docs/en/student_sheets/gyro_target.pdf) · [RO](MagicBox/docs/ro/fise_elev/tinta_giroscopica.pdf) |

@@ -1,21 +1,22 @@
 /*
- * Cutiuțele Magice — Firmware v2: Serial + WiFi cu provisioning AP
+ * MagicBox — Firmware v2: Serial + WiFi with an access-point setup portal
  *
  * Sensors : VEML7700 (light) · BME280 (T/H/P) · MPU-6500 (IMU)
- *           SCD41 (CO₂ + T/H) — citit la 5 s (ciclu hardware), valori
- *           reținute și retrimise în pachetul de 1 Hz
+ *           SCD41 (CO₂ + T/H), read every 5 s (its hardware cycle); the
+ *           last values are repeated in every 1 Hz packet
  * Wiring  : SDA=GPIO21  SCL=GPIO22  VCC=3.3V  GND=GND
  * Baud    : 115200
  *
- * WiFi setup (prima pornire / fără rețea salvată):
- *   1. Cutia pornește un Access Point deschis: "CutiaMagica-XXXX"
- *   2. Conectează-te la el cu telefonul/laptopul — pagina de
- *      configurare se deschide automat (captive portal, 192.168.4.1)
- *   3. Alege rețeaua WiFi a clasei, introdu parola, Salvează
- *   4. Cutia repornește și se conectează singură de acum înainte
+ * WiFi setup (first start / no saved network):
+ *   1. The box opens an open access point "MagicBox-XXXX".
+ *   2. Join it with a phone or laptop. Some phones open the setup page
+ *      by themselves; otherwise browse to 192.168.4.1 (Samsung phones
+ *      first ask "Internet may not be available": Connect only this time).
+ *   3. Pick the classroom network (2.4 GHz only), type the password, save.
+ *   4. The box restarts and joins that network by itself from then on.
  *
- *   Reset WiFi: ține apăsat butonul BOOT în timp ce alimentezi cutia
- *   (șterge rețeaua salvată și redeschide portalul).
+ *   WiFi reset: hold the BOOT button while powering the box
+ *   (erases the saved network and reopens the setup portal).
  *
  * Transport:
  *   - Serial: always on, identical to firmware v1
@@ -47,7 +48,7 @@
  * Libraries (Arduino Library Manager):
  *   Adafruit VEML7700 · Adafruit BME280 · Adafruit Unified Sensor · ArduinoJson
  *   SparkFun SCD4x Arduino Library
- *   (WiFi, WebServer, DNSServer, Preferences vin cu ESP32 core)
+ *   (WiFi, WebServer, DNSServer, Preferences come with the ESP32 core)
  */
 
 #include <WiFi.h>
@@ -62,6 +63,7 @@
 #include <Adafruit_BME280.h>
 #include <SparkFun_SCD4x_Arduino_Library.h>
 #include <lwip/sockets.h>   // non-blocking TCP connect (socket/fcntl/select)
+#include <esp_netif.h>      // DHCP option 114: captive-portal address
 
 // ── Firmware version ────────────────────────────────────────────
 // 2.0.0  serial + WiFi dual transport (based on serial_only 1.2.0)
@@ -86,11 +88,19 @@
 //        MPU-6500 digital low-pass ~20 Hz (CONFIG/ACCEL_CONFIG2 = 0x04)
 //        against aliasing at the 50 Hz output rate.
 //        Non-blocking TCP connect + exponential backoff (5 s → 60 s).
-#define FW_VERSION "2.2.5"
+//  2.2.6 Config portal in English, named MagicBox; lists the 2.4 GHz
+//        networks it sees with signal strength, escapes odd network
+//        names, announces itself by DHCP option 114 and, while nobody
+//        is on it, retries the saved network every 2 minutes. The serial
+//        line says WHY a join failed (not found / 5 GHz, wrong password).
+//        The setup network is called MagicBox-XXXX (was CutiaMagica-XXXX).
+#define FW_VERSION "2.2.6"
 
 // ── Provisioning ────────────────────────────────────────────────
-#define AP_PREFIX        "CutiaMagica-"   // AP SSID = prefix + last 4 of device ID
+#define AP_PREFIX        "MagicBox-"      // AP SSID = prefix + last 4 of device ID
+                                          // (CutiaMagica- before 2.2.6)
 #define STA_TIMEOUT_MS   20000            // give up STA, fall back to portal
+#define PORTAL_RETRY_MS  120000           // portal idle → try the saved network again
 #define RESET_BTN_PIN    0                // BOOT button — hold at power-up to clear WiFi
 
 // ── Discovery — must match core/wifi_manager.py ─────────────────
@@ -105,7 +115,7 @@
 #define HAS_VEML7700  1
 #define HAS_BME280    1
 #define HAS_MPU6500   1
-#define HAS_SCD41     1   // detectat la boot; absent pe I2C = ignorat
+#define HAS_SCD41     1   // detected at boot; absent from I2C = ignored
 
 // ── MPU-6500 registers (direct I2C — no library needed) ─────────
 #define MPU_ADDR      0x68
@@ -174,6 +184,9 @@ enum WifiState {
   W_PORTAL            // AP + captive config page active
 };
 static WifiState wifi_state = W_PORTAL;
+// Declared up here: the Arduino builder puts its prototypes before the
+// first function, and failKind() returns this type.
+enum FailKind { F_NONE, F_NOT_FOUND, F_PASSWORD, F_OTHER };
 
 Preferences prefs;
 WiFiUDP     udp;
@@ -184,6 +197,11 @@ DNSServer   dns;
 static String        sta_ssid, sta_pass;
 static String        scan_options;                // <option> list for the form
 static unsigned long t_sta_start     = 0;
+static unsigned long t_portal_retry  = 0;             // last retry from the portal
+static bool          portal_retrying = false;         // STA attempt with the AP still up
+static bool          portal_up       = false;         // AP + web server running
+static volatile uint8_t sta_reason   = 0;             // last STA disconnect reason
+static uint8_t       fail_reason     = 0;             // reason behind the last failed join
 static bool          udp_started     = false;
 static bool          tcp_announced   = false;     // headers sent on this TCP session
 static unsigned long t_last_tcp_try  = 0;
@@ -408,7 +426,7 @@ static void tcpAbortPending() {
 static void tcpFailed(const char* why) {
   tcpAbortPending();
   tcp_retry_ms = min((unsigned long)TCP_RETRY_MAX_MS, tcp_retry_ms * 2);
-  Serial.printf("[WiFi] TCP connect failed (%s) — next try in %lu s\n",
+  Serial.printf("[WiFi] TCP connect failed (%s): next try in %lu s\n",
                 why, tcp_retry_ms / 1000);
 }
 
@@ -467,13 +485,66 @@ static bool tcpPollConnect(unsigned long now) {
   return true;
 }
 
+// ── Why a join failed (ESP-IDF disconnect reason) ───────────────
+static void onStaDisconnected(WiFiEvent_t, WiFiEventInfo_t info) {
+  uint8_t r = info.wifi_sta_disconnected.reason;
+  // 8 (ASSOC_LEAVE) and 36 (STA_LEAVING) are the box's own disconnects:
+  // the core calls disconnect() before every retry, and that event would
+  // hide the real reason (e.g. 201, network not found).
+  if (r == WIFI_REASON_ASSOC_LEAVE || r == 36) return;
+  sta_reason = r;
+}
+
+static FailKind failKind(uint8_t r) {
+  switch (r) {
+    case 0:                                        return F_NONE;
+    case WIFI_REASON_NO_AP_FOUND:
+    case WIFI_REASON_NO_AP_FOUND_W_COMPATIBLE_SECURITY:
+    case WIFI_REASON_NO_AP_FOUND_IN_AUTHMODE_THRESHOLD:
+    case WIFI_REASON_NO_AP_FOUND_IN_RSSI_THRESHOLD: return F_NOT_FOUND;
+    case WIFI_REASON_AUTH_FAIL:
+    case WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT:
+    case WIFI_REASON_HANDSHAKE_TIMEOUT:
+    case WIFI_REASON_MIC_FAILURE:                  return F_PASSWORD;
+    default:                                       return F_OTHER;
+  }
+}
+
+static const char* failText(uint8_t r) {           // serial log, English
+  switch (failKind(r)) {
+    case F_NOT_FOUND: return "network not found (out of range, or 5 GHz only)";
+    case F_PASSWORD:  return "wrong password";
+    case F_OTHER:     return "no answer from the network";
+    default:          return "timed out";
+  }
+}
+
+// Network names are typed by people: an apostrophe or '<' must not break
+// the page (and must not inject markup into it).
+static String htmlEscape(const String& in) {
+  String out;
+  out.reserve(in.length() + 8);
+  for (size_t i = 0; i < in.length(); i++) {
+    char c = in[i];
+    switch (c) {
+      case '&':  out += F("&amp;");  break;
+      case '<':  out += F("&lt;");   break;
+      case '>':  out += F("&gt;");   break;
+      case '\'': out += F("&#39;");  break;
+      case '"':  out += F("&quot;"); break;
+      default:   out += c;
+    }
+  }
+  return out;
+}
+
 // ── Provisioning portal ─────────────────────────────────────────
 static void handleRoot() {
   String html;
-  html.reserve(2200);
-  html += F("<!DOCTYPE html><html lang='ro'><head><meta charset='utf-8'>"
+  html.reserve(3000);
+  html += F("<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-            "<title>Cutia Magic&#259;</title><style>"
+            "<title>MagicBox</title><style>"
             "body{font-family:sans-serif;background:#EEF6FF;color:#1E3A5F;"
             "max-width:420px;margin:24px auto;padding:0 16px}"
             "h1{font-size:22px}div.c{background:#fff;border-radius:12px;"
@@ -483,21 +554,27 @@ static void handleRoot() {
             "border-radius:8px;font-size:15px;box-sizing:border-box}"
             "button{margin-top:18px;width:100%;padding:12px;background:#2563EB;"
             "color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:700}"
-            "p.m{color:#64748B;font-size:13px}</style></head><body>"
-            "<h1>&#128300; Cutia Magic&#259; ");
+            "p.m{color:#64748B;font-size:13px}"
+            "label.s{display:flex;gap:8px;align-items:center;font-weight:400;"
+            "font-size:14px}label.s input{width:auto}</style></head><body>"
+            "<h1>&#128230; MagicBox ");
   html += DEVICE_ID;
   html += F("</h1><div class='c'><form method='POST' action='/save'>"
-            "<label>Re&#539;eaua WiFi</label><select name='ssid'>");
+            "<label>WiFi network</label><select name='ssid'>");
   html += scan_options;
-  html += F("</select>"
-            "<label>...sau scrie numele re&#539;elei</label>"
-            "<input name='ssid_manual' placeholder='(op&#539;ional)'>"
-            "<label>Parola</label>"
-            "<input type='password' name='pass' placeholder='parola re&#539;elei'>"
-            "<button type='submit'>Salveaz&#259; &#537;i conecteaz&#259;</button>"
+  html += F("</select><p class='m'>The box sees 2.4 GHz networks only. "
+            "&#128274; = password; the dots show the signal.</p>"
+            "<label>...or type the network name</label>"
+            "<input name='ssid_manual' placeholder='(optional)'>"
+            "<label>Password</label>"
+            "<input type='password' name='pass' id='pw' placeholder='network password'>"
+            "<label class='s'><input type='checkbox' "
+            "onclick=\"document.getElementById('pw').type=this.checked?'text':'password'\">"
+            "Show password</label>"
+            "<button type='submit'>Save and connect</button>"
             "</form><p class='m'>Firmware v" FW_VERSION
-            " &middot; Dup&#259; salvare cutia reporne&#537;te &#537;i se conecteaz&#259; "
-            "singur&#259; la aplica&#539;ia de pe PC.</p></div></body></html>");
+            " &middot; After saving, the box restarts and connects to the "
+            "app on the PC by itself.</p></div></body></html>");
   web.send(200, "text/html", html);
 }
 
@@ -506,16 +583,16 @@ static void handleSave() {
   if (!ssid.length()) ssid = web.arg("ssid");
   String pass = web.arg("pass");
   if (!ssid.length()) {
-    web.send(400, "text/plain", "Lipseste numele retelei.");
+    web.send(400, "text/plain", "The network name is missing.");
     return;
   }
   prefs.putString("ssid", ssid);
   prefs.putString("pass", pass);
   web.send(200, "text/html",
            F("<html><body style='font-family:sans-serif;text-align:center;"
-             "margin-top:40px'><h2>&#9989; Salvat!</h2>"
-             "<p>Cutia reporne&#537;te &#537;i se conecteaz&#259;...</p></body></html>"));
-  Serial.printf("[PORTAL] Saved network \"%s\" — restarting\n", ssid.c_str());
+             "margin-top:40px'><h2>&#9989; Saved!</h2>"
+             "<p>The box is restarting and connecting...</p></body></html>"));
+  Serial.printf("[PORTAL] Saved network \"%s\": restarting\n", ssid.c_str());
   delay(1500);
   ESP.restart();
 }
@@ -527,6 +604,20 @@ static void handleNotFound() {
   web.send(302, "text/plain", "");
 }
 
+// Android 11+ and iOS 14+ read the setup page's address from DHCP option
+// 114 (RFC 8910) and offer "Sign in to network" at once, instead of
+// probing the web first; some phones (Samsung) otherwise just say
+// "connected without internet" and never open the page.
+static void announcePortalUri() {
+  static const char uri[] = "http://192.168.4.1/";
+  esp_netif_t* ap = esp_netif_get_handle_from_ifkey("WIFI_AP_DEF");
+  if (!ap) return;
+  esp_netif_dhcps_stop(ap);
+  esp_netif_dhcps_option(ap, ESP_NETIF_OP_SET, ESP_NETIF_CAPTIVEPORTAL_URI,
+                         (void*)uri, strlen(uri));
+  esp_netif_dhcps_start(ap);
+}
+
 static void startPortal() {
   wifi_state = W_PORTAL;
   udp.stop();
@@ -535,29 +626,52 @@ static void startPortal() {
   tcp.stop();
   tcp_announced = false;
 
-  // Scan first (needs STA side), then bring up the AP.
+  // Scan first (needs STA side), then bring up the AP. The scan comes back
+  // strongest first; a dual-band router may list the same name twice.
+  WiFi.disconnect(false, false);
   WiFi.mode(WIFI_AP_STA);
   int n = WiFi.scanNetworks();
   scan_options = "";
-  for (int i = 0; i < n && i < 12; i++) {
+  String seen = "\n";
+  int shown = 0;
+  Serial.printf("[PORTAL] %d networks seen (2.4 GHz only):\n", n < 0 ? 0 : n);
+  for (int i = 0; i < n && shown < 12; i++) {
     String s = WiFi.SSID(i);
-    if (!s.length()) continue;
-    scan_options += "<option value='" + s + "'>" + s + "</option>";
+    if (!s.length() || seen.indexOf("\n" + s + "\n") >= 0) continue;
+    seen += s + "\n";
+    int rssi = WiFi.RSSI(i);
+    bool locked = WiFi.encryptionType(i) != WIFI_AUTH_OPEN;
+    Serial.printf("[PORTAL]   %-32s %4d dBm ch%-2d %s\n", s.c_str(), rssi,
+                  WiFi.channel(i), locked ? "locked" : "open");
+    const char* bars = rssi > -60 ? "&#9679;&#9679;&#9679;"
+                     : rssi > -72 ? "&#9679;&#9679;&#9675;"
+                                  : "&#9679;&#9675;&#9675;";
+    String e = htmlEscape(s);
+    scan_options += "<option value='" + e + "'";
+    if (s == sta_ssid) scan_options += " selected";
+    scan_options += ">" + e + " " + bars + (locked ? " &#128274;" : "") + "</option>";
+    shown++;
   }
+  WiFi.scanDelete();
   if (!scan_options.length())
-    scan_options = F("<option value=''>(nicio re&#539;ea g&#259;sit&#259;)</option>");
+    scan_options = F("<option value=''>(no 2.4 GHz network found)</option>");
 
   char ap_ssid[24];
   snprintf(ap_ssid, sizeof(ap_ssid), AP_PREFIX "%s", DEVICE_ID + 4);  // skip "BOX_"
   WiFi.softAP(ap_ssid);   // open network — classroom setup simplicity
+  announcePortalUri();
 
   dns.start(53, "*", WiFi.softAPIP());
-  web.on("/", handleRoot);
-  web.on("/save", HTTP_POST, handleSave);
-  web.onNotFound(handleNotFound);
+  if (!portal_up) {                  // routes are registered once
+    web.on("/", handleRoot);
+    web.on("/save", HTTP_POST, handleSave);
+    web.onNotFound(handleNotFound);
+  }
   web.begin();
+  portal_up = true;
+  t_portal_retry = millis();
 
-  Serial.printf("[PORTAL] AP \"%s\" pornit — conecteaza-te si deschide http://192.168.4.1/\n",
+  Serial.printf("[PORTAL] AP \"%s\" up: join it and open http://192.168.4.1/\n",
                 ap_ssid);
 }
 
@@ -568,16 +682,53 @@ static void wifiLoop(unsigned long now) {
     case W_PORTAL:
       dns.processNextRequest();
       web.handleClient();
+      // Nobody on the page and a network is saved: the router may simply
+      // have come up after the box. Try it again, keeping the AP up. Not
+      // while a phone is connected -- joining can move the radio to another
+      // channel and would drop the teacher mid-typing.
+      if (sta_ssid.length() && WiFi.softAPgetStationNum() == 0 &&
+          now - t_portal_retry > PORTAL_RETRY_MS) {
+        t_portal_retry = now;
+        portal_retrying = true;
+        sta_reason = 0;
+        wifi_state = W_STA_CONNECTING;
+        t_sta_start = now;
+        WiFi.begin(sta_ssid.c_str(), sta_pass.c_str());
+        Serial.printf("[WiFi] Portal idle: trying \"%s\" again\n", sta_ssid.c_str());
+      }
       return;
 
     case W_STA_CONNECTING:
+      if (portal_up) {                 // keep serving the page meanwhile
+        dns.processNextRequest();
+        web.handleClient();
+      }
       if (WiFi.status() == WL_CONNECTED) {
         wifi_state = W_STA_RUNNING;
+        fail_reason = 0;
+        if (portal_up) {               // joined from the portal: close it
+          web.stop();
+          dns.stop();
+          WiFi.softAPdisconnect(true);
+          WiFi.mode(WIFI_STA);
+          portal_up = false;
+        }
+        portal_retrying = false;
         Serial.print("[WiFi] Connected, IP: ");
         Serial.println(WiFi.localIP());
       } else if (now - t_sta_start > STA_TIMEOUT_MS) {
-        Serial.println("[WiFi] Cannot join saved network — opening config portal");
-        startPortal();
+        fail_reason = sta_reason ? sta_reason : 255;
+        Serial.printf("[WiFi] Cannot join \"%s\": %s (reason %u)\n",
+                      sta_ssid.c_str(), failText(fail_reason), fail_reason);
+        WiFi.disconnect(false, false);  // stop the STA's own retries
+        if (portal_retrying) {         // portal still up: just wait again
+          portal_retrying = false;
+          wifi_state = W_PORTAL;
+          t_portal_retry = now;
+        } else {
+          Serial.println("[WiFi] Opening config portal");
+          startPortal();
+        }
       }
       return;
 
@@ -592,7 +743,7 @@ static void wifiLoop(unsigned long now) {
       tcpAbortPending();
       tcp.stop();
       tcp_announced = false;
-      Serial.println("[WiFi] Connection lost — waiting for reconnect");
+      Serial.println("[WiFi] Connection lost: waiting for reconnect");
     }
     return;  // WiFi.setAutoReconnect(true) handles rejoining
   }
@@ -602,7 +753,7 @@ static void wifiLoop(unsigned long now) {
     udp_started = true;
     Serial.print("[WiFi] IP: ");
     Serial.print(WiFi.localIP());
-    Serial.printf(" — listening for beacon on UDP %d\n", BEACON_PORT);
+    Serial.printf(", listening for beacon on UDP %d\n", BEACON_PORT);
   }
 
   // Beacon: "MAGICBOX:EDUGEOLAB:<ip>:<port>" — refreshes the server
@@ -644,14 +795,14 @@ static void wifiLoop(unsigned long now) {
     // Session dropped — clean up and let the retry below reconnect.
     tcp.stop();
     tcp_announced = false;
-    Serial.println("[WiFi] TCP closed by server — will reconnect");
+    Serial.println("[WiFi] TCP closed by server: will reconnect");
   }
 
   if (tcp_pending_fd >= 0) {
     if (tcpPollConnect(now)) {
       sendHeadersTo(tcp);
       tcp_announced = true;
-      Serial.println("[WiFi] TCP connected — streaming");
+      Serial.println("[WiFi] TCP connected: streaming");
     }
   } else if (server_port != 0 && now - t_last_tcp_try >= tcp_retry_ms) {
     tcpStartConnect(now);
@@ -667,7 +818,7 @@ void setup() {
            (uint16_t)(ESP.getEfuseMac() >> 32));
 
   // Unknown header lines are ignored by the app's parser — safe to add.
-  Serial.printf("[BOOT] Cutiutele Magice fw v%s (build %s)\n",
+  Serial.printf("[BOOT] MagicBox fw v%s (build %s)\n",
                 FW_VERSION, __DATE__);
 
   // Hold BOOT at power-up → erase saved WiFi (factory reset)
@@ -676,7 +827,7 @@ void setup() {
   delay(50);
   if (digitalRead(RESET_BTN_PIN) == LOW) {
     prefs.clear();
-    Serial.println("[PORTAL] BOOT held — saved WiFi erased");
+    Serial.println("[PORTAL] BOOT held: saved WiFi erased");
   }
   sta_ssid = prefs.getString("ssid", "");
   sta_pass = prefs.getString("pass", "");
@@ -758,12 +909,13 @@ void setup() {
   if (sta_ssid.length()) {
     wifi_state = W_STA_CONNECTING;
     t_sta_start = millis();
+    WiFi.onEvent(onStaDisconnected, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
     WiFi.mode(WIFI_STA);
     WiFi.setAutoReconnect(true);
     WiFi.begin(sta_ssid.c_str(), sta_pass.c_str());  // non-blocking; wifiLoop() polls
     Serial.printf("[WiFi] Joining \"%s\" ...\n", sta_ssid.c_str());
   } else {
-    Serial.println("[WiFi] No saved network — opening config portal");
+    Serial.println("[WiFi] No saved network: opening config portal");
     startPortal();
   }
 }
@@ -798,7 +950,7 @@ void loop() {
         if (ok) {
           imu_fail = 0; imu_recover_count = 0;
         } else if (imu_recover_count >= 30) {
-          Serial.println("[MPU6500] permanent failure — IMU disabled");
+          Serial.println("[MPU6500] permanent failure: IMU disabled");
           mpu_ok = false;
         }
       }
