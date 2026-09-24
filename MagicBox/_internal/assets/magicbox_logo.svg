@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- MagicBox logo: an open box with a data wave and sparkles rising out of
+       it: the box turns the world into data. Colours come from the app:
+       the navy sidebar and the Okabe-Ito orange and sky blue of the charts.
+       Source of assets/magicbox.ico and the PNGs (tools/make_icons.py). -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2A5585"/>
+      <stop offset="1" stop-color="#0F2440"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#FFE9A8" stop-opacity="0.9"/>
+      <stop offset="0.55" stop-color="#FFD166" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#FFD166" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="left" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7B924"/>
+      <stop offset="1" stop-color="#E69F00"/>
+    </linearGradient>
+    <linearGradient id="right" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E8751A"/>
+      <stop offset="1" stop-color="#C85500"/>
+    </linearGradient>
+    <clipPath id="tile">
+      <rect x="8" y="8" width="240" height="240" rx="54"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background tile -->
+  <rect id="tile-bg" x="8" y="8" width="240" height="240" rx="54" fill="url(#bg)"/>
+
+  <g clip-path="url(#tile)">
+    <!-- Light pouring up out of the opening -->
+    <path d="M62 150 L194 150 L236 8 L20 8 Z" fill="url(#glow)"/>
+  </g>
+
+  <!-- Open top of the box (dark inside) -->
+  <path d="M128 122 L194 152 L128 182 L62 152 Z" fill="#0B1A2E"/>
+
+  <!-- Data wave rising from inside the box -->
+  <path d="M126 158 C 112 138, 146 126, 130 104 S 146 70, 178 60"
+        fill="none" stroke="#56B4E9" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="180" cy="59" r="10" fill="#FFFFFF"/>
+
+  <!-- Front faces -->
+  <path d="M62 152 L128 182 L128 240 L62 210 Z" fill="url(#left)"/>
+  <path d="M128 182 L194 152 L194 210 L128 240 Z" fill="url(#right)"/>
+  <path d="M62 152 L128 182 L194 152" fill="none" stroke="#FFE3A3"
+        stroke-width="4" stroke-linejoin="round"/>
+
+  <!-- Lid, flipped open on the back-left edge -->
+  <path d="M62 152 L128 122 L110 84 L44 114 Z" fill="#F7C548"
+        stroke="#FFE3A3" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Sparkles -->
+  <path d="M78 26 Q 81 45 100 48 Q 81 51 78 70 Q 75 51 56 48 Q 75 45 78 26 Z"
+        fill="#FFFFFF"/>
+  <g id="fine-detail"><!-- left out of the 16-32 px icons, where it is noise -->
+    <path d="M206 92 Q 208 103 219 105 Q 208 107 206 118 Q 204 107 193 105 Q 204 103 206 92 Z"
+          fill="#FFE9A8"/>
+    <circle cx="160" cy="30" r="5" fill="#FFE9A8"/>
+  </g>
+</svg>

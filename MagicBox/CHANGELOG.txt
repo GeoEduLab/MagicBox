@@ -1,0 +1,551 @@
+﻿CHANGELOG
+=========
+
+All notable changes to MagicBox, newest first.
+
+v5.3.1 — 24 September 2026
+--------------------------
+
+Added:
+
+  - **A box whose motion sensor sits the other way up can be set right from
+    Settings — no second firmware.** Because of an assembly mistake the motion
+    sensor is mounted upside down, and the firmware turns its readings back over
+    for every box. A box built with the sensor the other way up then got the same
+    correction and came out wrong: lying flat it showed about −1 g on
+    acceleration Z instead of +1 g, the aeroplane in Among the Clouds flew
+    tail-first and tilting to the right read as tilting to the left. In
+    Settings → Box names, every box now has a Motion sensor upside down
+    tick. Tick it for such a box and its motion data (acceleration and rotation,
+    X and Z) are turned the right way up before they reach any screen, activity
+    or saved file. The tick is remembered for that box, by its ID, so it has to
+    be set only once. All boxes keep the same firmware. To check a box, lay it
+    flat and look at acceleration Z on the Live Data page: it should be about
+    +1 g. The technical manual says the same, in its section on the motion
+    sensor and under common problems.
+
+v5.3 — 23 September 2026
+------------------------
+
+The result of five reviews — of the code, and through the eyes of a teacher, a
+pupil, a screen designer and a science specialist. The application now starts
+in Romanian, the guided experiments ask pupils to predict before they measure
+and to judge afterwards how sure they can be, and the charts can be read on a
+projector and on a 1366 × 768 laptop. The boxes move to firmware 2.2.5 / 1.3.4
+at the same time; those changes are in the firmware's own changelog in the
+firmware folder.
+
+Added:
+
+  - MagicBox has its own logo: an open box with data rising out of it.
+    A data wave and a few sparkles come out of the open lid. Until now the title
+    bar showed a blank default icon, MagicBox.exe looked like any Python
+    program in Explorer and on the taskbar, and the splash screen and sidebar
+    borrowed a microscope emoji, which looks different on every computer. The
+    logo is now the program's icon in Explorer, on the taskbar, in Alt+Tab and
+    in the title bar, and it opens the splash screen. It is drawn in the chart
+    colours, and redrawn for the smallest sizes so it stays a clear box at 16
+    pixels.
+
+  - MagicBox speaks Romanian, and starts in it. English is a switch in
+    Settings (restart to apply). Numbers are written the Romanian way — "1008,3
+    hPa", never a thousands separator — and activities carry the names their
+    guides use.
+  - Guided experiments ask for a prediction and quote it back. The
+    conclusion sets what the pupils expected beside what they measured ("You
+    predicted: twice as much. Under the desk: 42 lx, near the window: 2400 lx —
+    about 57 times more") instead of a fixed paragraph that was the same for
+    every class.
+  - A "How sure are we?" step before each conclusion. Juniors compare two
+    readings of one place; Explorers set two boxes side by side and trust only
+    differences bigger than theirs; Scientists get the spread, a ± on each
+    fitted rate and a control run — all from the class's own readings.
+  - A Capture button, and tables that fill themselves. It keeps the average
+    of the last few seconds, so nobody copies a number mid-jump. Pressure and
+    Altitude fills a table floor by floor and back down, the Beer–Lambert Law
+    fits its line with slope ± and R², Solar Panels compares a tilt series with
+    cos θ. Continue looks lighter until a needed capture is made, but never
+    locks.
+  - New measurements where the science needed them. A dew-point card and a
+    cold-spoon step in The Water Cycle; the pressure tendency in hPa per hour in
+    Physics of the Atmosphere; a side-by-side calibration and a drift correction
+    in Urban Heat Islands; fitted CO₂ rates, the light compensation point and
+    gross photosynthesis in CO₂ and Photosynthesis; a "night to sun" light bar
+    for young pupils; a settling countdown where readings were being taken too
+    early.
+  - More in the tools and games. The Weather Station gives sea-level
+    pressure for your altitude and the three-hour tendency in forecasters'
+    words. Heat Islands judges ΔT against how much your boxes differ side by
+    side, and asks whether a box is in the sun. The Greenhouse Effect charts the
+    jar temperature, Solar Energy shows panel temperature, Earthquake! says what
+    cost a life, and Among the Clouds shows roll and pitch and keeps the best
+    score.
+  - Name your boxes. A box can be "Grupa 1" instead of BOX_A1B2, and its
+    name, colour and line style are the same on every screen, so "the blue line"
+    is visibly Grupa 1. Each activity says which box it is reading and shows a
+    red banner when none is sending, so nobody watches frozen numbers thinking
+    they are live.
+  - "Open guide" and search on the Activities page. Each card opens its
+    teacher guide or pupil sheet from the PDFs shipped with the program; typing
+    "co2" or "V–VIII" narrows the list.
+  - Projector mode and the school's altitude in Settings. Projector mode
+    makes chart text 25 % larger and lines thicker; the altitude lets pressure
+    be compared with the forecast.
+  - Warnings that stay on screen, and a check for old firmware. Problems
+    such as data that cannot be saved stay as a yellow note at the bottom of the
+    window instead of flashing past, and are written to logs/app_errors.log to
+    send us. A box older than 2.2.1 / 1.3.0, which reports tilt upside down, is
+    told plainly to be reflashed.
+  - A lesson exported in one go, in a form Romanian Excel opens. "Export all
+    boxes" puts one Excel file per box into a dated folder. A CSV can be saved
+    "for Excel in Romanian" (semicolons, decimal commas) and opens in columns.
+    Every Excel file lists each sensor's accuracy, so pupils can judge whether a
+    difference is real.
+  - The teaching material now travels inside the application package. Until
+    now the standalone folder held the program, the changelog and the flashing
+    guide, while the 54 teacher guides and pupil sheets lived only in the
+    project — so the two could drift, and a teacher given a stick had the
+    application without the lessons. MagicBox\docs\ro\ and MagicBox\docs\en\
+    now carry all 112 PDFs, refreshed by the build script every time the program
+    is rebuilt. The whole folder is one version: the executable, its changelog
+    and the guides can no longer come from different releases. It adds about 31
+    MB.
+  - Both firmware variants, and a Romanian flashing guide. The firmware
+    folder holds serial_wifi_v2_2_5 (USB and WiFi) and serial_only_v1_3_4
+    (cable only), and the flashing guide in Romanian as well as English.
+
+Changed:
+
+  - Chart time starts at 0:00 on each step and ticks on round values — 0:30,
+    1:00, 5:00, then h:mm:ss after an hour — instead of seconds since the
+    program started (2770, 2780 …). The axis moves in steps, so the numbers
+    stand still long enough to read.
+  - Charts no longer turn sensor noise into drama. Each quantity has a
+    smallest range (1 °C, 1 hPa, 100 ppm, 0.5 g …) that shrinks only slowly, so
+    a 0.1 °C wobble no longer fills the screen. Charts grow with the window; on
+    a 1366 × 768 laptop every graph and the time axis are visible.
+  - One colour per quantity, one colour per box. Temperature is always
+    orange, CO₂ violet, and the three motion axes are no longer three
+    near-identical purples. Each box keeps a colour-blind-safe colour all
+    lesson; a disconnected one is drawn faded and thinner, in its own line
+    style, and marked "(offline)". Verdict bands are pale backgrounds, named
+    inside the visible part of the band, and hidden while no box is sending.
+  - Cards readable from the back row, with sensible decimals. Darker
+    colours, larger titles; pressure reads "1008.3 hPa", not "1,008". Juniors
+    see whole numbers and no chart buttons — except acceleration, which keeps
+    two decimals so a flat box's 0.97 g can be seen, and temperature, which
+    keeps its tenth so the card agrees with the chart.
+  - The Activities page is grouped into Guided experiments, Explore tools and Games,
+    with smaller cards showing school years and duration, a level icon and word
+    instead of colour alone, and one blue Start button (the red one looked like
+    a warning). Levels, ages and names follow the guides; the two heat-island
+    activities are "Urban Heat Islands" and "Heat Islands with Several Boxes",
+    and Heat Islands has its own icon. The chosen level is remembered.
+  - Home tells you what to do. With no box: three steps and a big Rescan
+    button. With boxes: a tile each with name, colour, online state and latest
+    readings. The box picker greys out boxes lacking a needed sensor and
+    remembers your choice.
+  - Nothing a pupil writes or measures is lost. Journal notes stay with
+    their step and are saved as you type; at Finish they go into Excel with one
+    sheet of measurements per step, and the end screen says exactly what was
+    saved and where — it used to claim "Data saved automatically" when nothing
+    was. Excel from a step now holds every raw reading, not the last 400
+    smoothed chart points; PNG saves every chart, not just the first; steps
+    without a chart no longer show the two buttons.
+  - Log files begin with date and time to the millisecond and an "Elapsed (s)" column,
+    the one to chart with. The Data page lists every file and the real folder,
+    and is visible at Scientist level.
+  - The science on screen is right, and says where it comes from. CO₂ is a
+    sign of how well a room is aired (EN 16798-1; the WHO has no indoor CO₂
+    guideline), not a poison. Experiments use the materials in the guides — warm
+    tap water, a water blank, a closed jar. Urban Heat Islands follows a proper
+    protocol: same height, box shaded, two minutes. Solar watts and efficiency
+    are labelled as a model; only lux is measured. The Resonance buildings have
+    10, 5 and 3 floors, so T ≈ N/10 really holds.
+  - Shakes are measured the way a seismograph would. Seismology and The
+    Seismometer read all 50 samples a second, so a short knock cannot slip
+    between looks, and remove gravity on each axis, so a sideways knock counts
+    like a vertical one. The card once called "Magnitude" is now "Shaking (g)" —
+    pupils read 1.01 as the size of an earthquake.
+  - Air Quality says one thing at a time. A gauge can no longer say "Good"
+    above a sentence saying "stale", and a box no longer looks dangerous for
+    having been given purple.
+  - Games that reward what they teach. Resonance asks you to make each
+    building dance on its own; Gyro Target's rings are readable on a projector;
+    Flying Straight has pupils turn the box round to tell a tilted table from
+    the box's own offset.
+  - Quicker with a whole class connected. A Live page with three boxes
+    refreshes about seven times faster, and the app no longer opens every COM
+    port — Bluetooth and other devices are left alone.
+  - No activity can go missing from the Windows package. The build now
+    gathers every activity, tool and translation by itself instead of from a
+    hand-kept list.
+  - The docs/ro and docs/en folders now hold nothing but the finished PDFs.
+    They are meant to be handed over whole — dropped onto a shared drive, copied
+    to a stick, put on the school server — but each one also carried the LaTeX
+    source of every document beside it, so a teacher opening ghiduri_profesor
+    met 27 guides and 27 unreadable .tex files with the same names, and had
+    to know which of the two to click. The sources have moved to docs/tex, in
+    the same shape; a stray build file that had been committed by accident
+    (technical_manual.listing) is gone as well. Nothing about the guides
+    themselves changed — same documents, same names, same pages — only what sits
+    next to them.
+
+Fixed:
+
+  - Charts drew CO₂ at the wrong speed. Motion and the slower sensors shared
+    one clock, so ten minutes of CO₂ could be squeezed into seconds, and
+    Resonance could misreport your shaking frequency. Every reading is now drawn
+    when it was measured.
+  - The accelerometer chart said 0.000 g for a flat box while its card said 1.02 g.
+    Charts now keep gravity, and AZ sits at +1 g.
+  - Charts kept drawing after a box was unplugged, piling points on one
+    spot. They now take only new readings.
+  - Exercises read the first box ever connected, not the one shown.
+  - A box vanished when the program ran from a stick or a school share,
+    because its log could not be created. Logs now fall back to
+    Documents\MagicBox\logs.
+  - A working box was shown offline, or recorded motion twice, when
+    connected by USB and WiFi at once; and Nimbi said "All sensors look good!"
+    while a box was disconnected.
+  - Exporting froze the app, or failed without a word, and opening the
+    running log in Excel froze Live Data. Export is now fast, says why when it
+    cannot write, and never overwrites a same-named box.
+  - Settings forgot what you set. The sea-level pressure went back to
+    1013.25 hPa at every start, "Auto-save to CSV" could not be turned off, and
+    the WiFi help named a network no box creates.
+  - Text with a less-than sign vanished, so "Moonless night: less than 1
+    lux" never appeared.
+  - Instructions that taught the wrong thing. The Water Cycle sent pupils to
+    a cold window "to watch the humidity drop" — cooling raises it. A 1:2
+    dilution was called a doubling. The Weather Station warned a school 300 m up
+    of a storm every day, because its pressure was below 1013 hPa. The heat
+    index gave a value below 27 °C, where it means nothing.
+  - Screens that did not work. The Beer–Lambert graph step crashed; Heat
+    Islands showed "—°C" forever; Spectroscopy gave a negative absorbance
+    instead of asking for a new reference; the Measurement Notebook relabelled
+    saved points.
+  - Small display faults: checkboxes without a tick, clipped arrows, "Data
+    _Export", "Fold", "1 rings".
+  - The Live page cut off its own time axis. On the "All" view the bottom
+    chart of each group lost half its time labels and the "Time (min:s)" line
+    until you picked a filter; the Pause and Clear buttons lost the comma under
+    "Ș". Rows of cards no longer shift sideways when a box is unplugged.
+  - Romanian screens mixed in English and decimal points. Formulas,
+    file sizes, the jar volume and the Beer–Lambert axis now use the decimal
+    comma; the heat index is "Indicele de căldură", acceleration "Accelerație
+    X"; the connection log says in Romanian when a box connects. Negative
+    numbers use a real minus sign (−2,5), and a saved value is named ("Salvat:
+    Temperatură 26,1 °C"), not "T 26".
+  - Conclusions that said the wrong thing. "It fell by −150 ppm" when the
+    CO₂ rose, "1 times the background noise" for a peak lost in the noise, and
+    "−82.7 % away from I₀" now read "it rose by 150 ppm", "no bigger than the
+    background noise" and "82.7 % below I₀ — measure the series again". In The
+    Magic Thermometer the difference is taken from the two numbers shown, so
+    26 and 23 can no longer give −2.
+  - Charts and cards that hid their words. Long card titles ("Amplitudinea
+    de vârf") wrap onto a second line instead of being cut; a verdict band's
+    name is no longer clipped at the top of a chart; Air Quality with no box no
+    longer shows a stack of verdicts on an empty chart; gyroscope lines are
+    solid instead of breaking into dashes on noisy data; charts show at least
+    three values on their axis.
+  - The flashing guide shipped with v5.2 still said "Magic Boxes v5.1" on every page.
+    Its build script looked for the shared LaTeX style in docs/teacher_guides,
+    a folder that no longer exists, so bash firmware/guide/build.sh had been
+    failing silently for months and the PDF in firmware/ was frozen at
+    whatever it looked like in July. The script now points at docs/shared, and
+    says so out loud when a build fails instead of stopping without a word. The
+    guide is rebuilt: same five pages, same instructions, correct version in the
+    header.
+
+Removed:
+
+  - The silent deletion of old logs. Version 5.2 deleted every log older
+    than 14 days at each start, which could take a class's data before anyone
+    exported it. Nothing is deleted now unless you set "Keep logs" in Settings,
+    and the app asks first.
+  - The Orientation app, which no menu could open and which still said a
+    flat box reads −1 g. The Box in Balance covers the same ground.
+  - The baud-rate and "max points" controls in Settings, which did nothing.
+
+Notes for this release:
+
+  - Light above about 3 800 lx needs firmware 2.2.5 / 1.3.4. Older boxes
+    stop there; the light activities notice a reading stuck at that ceiling and
+    say to reflash.
+  - Two checks on real boxes are still to come. Readings above about 10 000
+    lx have not yet been compared with a reference lux meter, so treat
+    bright-sun values as approximate (comparisons are reliable). The tap and
+    earthquake thresholds were set for the new firmware's 20 Hz motion filter
+    and still need testing by shaking real boxes.
+  - Logs recorded with earlier versions keep their old columns.
+
+v5.2 — 4 September 2026
+-----------------------
+
+A bilingual, Romanian-first rewrite of the teaching material. It began as a
+two-activity pilot at the end of August and now covers all 27 activities,
+converted a batch at a time. Each one exists as a teacher guide and a separate
+two-page pupil sheet, in Romanian and in English, written in Romanian first
+and translated afterwards.
+
+Added:
+
+  - **The curriculum plan now exists in Romanian too, and it finally contains
+    the rubric that all 27 guides point at.** Each guide ends by saying that the
+    three-strand rubric is "defined once in the curriculum plan and not repeated
+    here" — but the plan listed only the three strand headings, with no
+    descriptors, so the promise was empty. It now carries a full grid: three
+    strands against three levels of attainment, with what a pupil actually does
+    at each. The levels are named emerging / secure / confident on purpose,
+    because calling them Junior, Explorer and Scientist would collide with the
+    activity levels that already carry those names — a pupil can be confident on
+    a Junior activity, and the plan says so.
+  - A printable sheet for pupils, separate from the teacher guide. Until
+    now the only worksheet was a section inside a long teacher PDF, so there was
+    nothing to hand a child. Each converted activity now has its own two-page
+    sheet, printed double-sided on a single sheet of paper: what I see on the
+    screen, what I do on my own, the conclusion I write. Tables arrive with
+    their labels and rows already printed, and the conclusion comes with
+    sentence openings.
+  - Romanian versions of the teaching material. Every converted activity now
+    exists separately in Romanian and English rather than English only, and
+    Romanian is the version that is written first. The rest of the 27 activities
+    will follow in later batches.
+  - A box at the top of these guides giving the school years they suit,
+    what pupils must already know, how long your own preparation takes as
+    distinct from how long the sensor needs to settle, how many boxes you need,
+    and three routes through the activity — short, full, and as a project.
+
+Changed:
+
+  - The English documents are now named in English. The English folder
+    used to carry the Romanian file names of its sources, so a teacher looking
+    for The Box in Balance had to know to open echilibrul.pdf. Every English
+    guide and pupil sheet is now named after its title
+    (box_in_balance.pdf, weather_station.pdf, earthquake.pdf ...), and
+    each guide's "The student sheet" section points at the new name. The
+    Romanian files keep their names. The one activity whose title collides,
+    the multi-box Urban Heat Islands application, is urban_heat_islands_multibox.pdf
+    to keep it apart from the single-box exercise of the same name.
+  - **Reprint the guides for Seismology, The Seismometer, Earthquake!, Gyro
+    Target, the Beer-Lambert Law, Air Quality and Solar Energy.** Those seven
+    described app behaviour that has now been fixed, and several taught the
+    quirk as the lesson — the Seismology guide was subtitled "an event counter
+    that does not count events", and its first investigation had pupils
+    discover that the counter was three times deafer to sideways shaking. The
+    physics survives, because the reason the app now subtracts gravity as a
+    vector is the same vector reasoning that explained the old fault, and
+    pupils can still work out on paper how much direction would have
+    mattered. But a printed copy from before September 2026 now describes an
+    app that no longer exists. Both languages are updated, and so are the two
+    technical manuals, which carried the aftershock formula, the magnitude
+    estimate and the "3-7 days" figure.
+  - Technical warnings now sit beside the step they affect instead of in
+    the background reading. The clearest case is the Heat Index in Physics of
+    the Atmosphere: below about 27 °C it is not a meaningful result, and the
+    guide says so where the number appears on the screen.
+  - Adaptations for pupils with special educational needs became concrete
+    in these two guides. Instead of one line about support and stretch, each
+    now names what to change: a single-axis version, a pre-filled column of
+    calculations, oral answers, and real jobs — screen reader, timekeeper, data
+    keeper — for a pupil who cannot handle the box.
+  - The internal manual is now the technical reference manual, and exists
+    in English as well as Romanian.
+
+Fixed:
+
+  - **Every printed guide and sheet still said v5.1 on the page, while the
+    application said v5.2 on screen.** The running header at the top of all 116
+    PDFs, the technical manual's cover and the line in the curriculum plan that
+    states which version the documents describe had been left behind at the
+    release. A teacher comparing the paper in their hand with the home screen
+    saw two different versions and no way to tell which was current. All of it
+    now reads v5.2, and the PDFs have been rebuilt in both languages.
+  - Earthquake! told children to run for cover, which is not what you do.
+    The line above the game read "when the P wave comes run for cover". The
+    official advice, and what the game itself models, is the opposite: you
+    take cover where you are and stay down until the shaking stops, because
+    most injuries happen while trying to move. The hint now says that.
+  - The Seismology event counter counted tenths of a second, not events.
+    It added one every time it looked and found the threshold exceeded, ten
+    times a second, so one two-second shake was reported as twenty events and
+    a class writing down "43 events this morning" was really writing down four
+    and a bit seconds of shaking. It now counts each shake once. The threshold
+    was also being compared against the raw reading, which still contains
+    gravity, so an up-and-down shake needed 0.2 g to register while the same
+    shake sideways needed 0.66 g — the counter was three times deafer in one
+    direction. Gravity is now subtracted as a direction before deciding, the
+    way a real seismograph does, and a shake counts the same whichever way it
+    points.
+  - **Earthquake!'s aftershocks grew until they were bigger than the
+    earthquake.** They escalated to magnitude 7 against a mainshock of 5.8.
+    Real aftershocks are smaller than the shock that spawned them. The game
+    still gets harder, but now climbs towards a ceiling below the mainshock
+    instead of straight through it.
+  - Both games scored something other than what they teach. In
+    Earthquake! the score grew with every second spent playing, so a pupil who
+    sheltered under a table and never moved beat one who crossed the school
+    and got out — the opposite of the lesson. The route is now most of the
+    score, sheltering well during a shock adds to it, and standing about earns
+    nothing. In Gyro Target the score stopped at a floor of 100 points after
+    45 seconds, so every slower attempt tied: the number stopped telling
+    anyone apart exactly among the pupils finding it hardest, and who would
+    most have noticed themselves improving. It now keeps falling for as long
+    as anyone can take.
+  - Gyro Target threw away the learning curve it exists to show. It kept
+    only the best time for each level, which is precisely the figure that
+    hides the improvement from attempt to attempt — teachers were told to
+    bring a stopwatch because of it. Every attempt is now kept and the results
+    screen shows the run in order, so the fall is visible in the app.
+  - **The Beer-Lambert reference was taken silently and could not be
+    re-taken.** The first reading above 10 lux became I₀ for the session. A
+    group that put a coloured solution in the beam before the blank got a
+    wrong reference, and every absorbance for the rest of the lesson was wrong
+    with it — plausibly wrong, which is worse, because nothing on screen
+    disagreed. The reference is now shown, says whether it was chosen or
+    merely assumed, can be re-taken with a button, and names which box is
+    being read.
+  - A card labelled "Richter (ML est.)" was not a magnitude. It is
+    log₁₀ of the peak acceleration with no distance correction — and the
+    distance correction is the whole of what turns a measured amplitude into a
+    magnitude. What it measures is the shaking at that desk, which is the
+    family of quantities called intensity. It is now called what it is, a
+    shaking index, and the Seismology theory tab warns that the Magnitude card
+    is the size of an acceleration vector rather than an earthquake's
+    magnitude.
+  - Air Quality could call a stuffy building fine. The verdict was decided
+    on the difference between boxes alone, so a floor sitting uniformly at
+    2000 ppm had almost no difference between rooms and the app printed
+    "Similar air quality in all locations". The level and the difference are
+    now reported separately, because they answer different questions. A small
+    difference is also no longer declared similar: it says to put the boxes
+    side by side first, because until a class has measured how far apart two
+    boxes read on the same desk, it cannot know whether a small difference
+    between rooms is real.
+  - **The Solar Energy "Lux-Power Correlation" tab could not show a
+    correlation.** Irradiance there is illuminance divided by 120, so plotting
+    one against the other draws the division and nothing else: a dead straight
+    line, whatever the weather. Presenting that as a discovered correlation
+    teaches that a straight line is evidence. It is now labelled a conversion
+    chart and says why it must be straight.
+  - The Gyro Target card promised three levels and the game has four. The
+    fourth — the moving target and the inverted controls at once — was added
+    without the card being told, so a teacher planning the lesson budgeted for
+    a shorter activity than the one their class would meet. The card now says
+    four, and a test now holds the card's promise against the levels the game
+    actually defines, so the two cannot drift apart again.
+  - The Solar Panels card promised nine steps and the activity has seven.
+    A teacher planning the lesson from the card was budgeting for two steps
+    that do not exist. The card now says seven. Every other activity's count
+    was already right.
+  - **Seven of the 27 guide screenshots showed a box reading −1 g flat on the
+    table, which no current box does.** The picture generator still used the
+    old firmware convention from before v2.2.1/v1.3.0, when a flat box really
+    did read −1 g; every box since reports +1 g flat. One of the wrong
+    screenshots was on a pupil's own worksheet, four pages after the guide text
+    telling the teacher that a box reading −1 g flat needs reflashing — a
+    contradiction a sharp-eyed teacher had already spotted. The generator now
+    uses the current convention, and all seven screenshots have been redrawn.
+    An eighth activity, flight in a straight line, was also on the affected
+    list but did not need redrawing: its screen shows only roll and pitch,
+    and each of those takes az squared — the sign disappears in the squaring,
+    so the angle is the same whichever sign az has. Its picture never showed
+    the wrong value in the first place.
+
+v5.1 — 31 July 2026
+-------------------
+
+The first release intended for use outside Romania. The whole interface is now
+in English, saved data opens directly in Excel, and several long-standing
+defects are fixed.
+
+Added:
+
+  - "Export data" button in the analysis apps. Weather Station, Air Quality,
+    Solar Energy, Greenhouse Effect, Seismology, Urban Heat Islands, Orientation
+    and Spectroscopy can now save the current session as an Excel workbook or CSV
+    without leaving the app. The suggested filename carries the box identifier and
+    the date (for example BOX_3859_2026-07-31.xlsx), so measurements from
+    different days can be compared. Air Quality and Urban Heat Islands export
+    every connected box at once.
+  - Teacher documentation. A guide for each of the 27 activities in
+    docs/teacher_guides/, plus a programme-level curriculum plan covering
+    lesson sequencing, timing, materials and equipment planning.
+  - Firmware and flashing instructions in the package. The firmware folder
+    next to the application holds the box firmware, an illustrated step-by-step
+    guide to installing it with the Arduino IDE (FLASHING_GUIDE.pdf, with
+    wiring and menu diagrams), and the firmware's own changelog.
+  - Screenshots in the teacher guides. Every activity guide now opens with a
+    picture of the screen the teacher will see.
+  - Missing third experiment in "The Air We Breathe". The exercise promised
+    three experiments but stopped after the second; the window-ventilation
+    experiment and a closing step have been added.
+
+Changed:
+
+  - The application is now called MagicBox. The name appears on the splash
+    screen, in the sidebar, in the window title and in Settings, the programme is
+    MagicBox.exe, and the folder you receive is MagicBox. Activity choices
+    saved by an earlier version are carried over automatically on first launch,
+    so nothing has to be set up again.
+  - Formulas are written properly. Every formula in the exercises and apps
+    now appears in a card of its own: the equation with real superscripts and
+    subscripts instead of ^ and /, a line reading it in ordinary words, and a
+    list naming each symbol with its unit. The dew-point calculation, previously
+    one nested expression spread over two lines, is now two steps — first the
+    helper value, then the dew point.
+  - The whole user interface is now in English, including all exercises,
+    apps, games, help text and exported spreadsheet headings.
+  - Automatically saved data is now a readable table. Session logs in the
+    logs folder previously stored each reading as a block of JSON inside one
+    spreadsheet column, which was unusable for students and teachers. Each log is
+    now an ordinary CSV with one column per sensor and full column names
+    (Time, Date, BME280 Temperature (°C), Illuminance (lux), …), openable in
+    Excel with a double click. High-rate motion data is written alongside it in a
+    separate file ending in _imu.
+  - Sensor readings are labelled consistently everywhere: raw firmware names such
+    as lux and raw_als now appear as "Illuminance" and "ALS signal" in saved
+    files as well as on screen.
+  - The Greenhouse Effect app no longer instructs students to place a lit candle
+    inside a sealed container next to the equipment. It now suggests breathing
+    into the container or using a bicarbonate-of-soda and vinegar reaction, and
+    warns explicitly against using a flame.
+  - The version number shown on the home screen, in the sidebar and in
+    Settings is now consistent (Settings previously reported 4.0).
+
+Fixed:
+
+  - The Heat Index in "Physics of the Atmosphere" returned nonsensical values.
+    Two coefficients of the Rothfusz regression were truncated, one by a factor of
+    ten, so a comfortable 22 °C room at 45 % humidity reported an apparent
+    temperature of 58 °C, and 30 °C at 60 % humidity reported 97 °C. The published
+    coefficients are now used, and below the regression's valid range
+    (about 27 °C and 40 % humidity) the air temperature is reported unchanged.
+  - "The Box in Balance" now shows what happens when you turn the box over.
+    The step said a flat box reads AZ ≈ 1 g and stopped there; it now adds that
+    turning it upside down gives −1 g, so the sign is read as a direction.
+  - Three lines of guidance in "Physics of the Atmosphere" were invisible. A ""
+    written in the text was read as the start of a hidden instruction, which
+    swallowed everything up to the next "" — including the whole line about dry
+    air.
+  - Long recording sessions no longer lose slow-sensor readings from the export
+    buffer when a motion sensor is streaming; the two data streams are kept
+    separately, so exports now cover up to about 20 hours of readings.
+  - Empty log files are no longer created for sessions in which no data arrived.
+  - A sensor that reports late in a session — the CO₂ sensor sends its first
+    reading after a few seconds — now has its column added to the log file
+    correctly instead of being dropped.
+
+Notes for this release:
+
+  - Data recorded with earlier versions keeps its old format; only new sessions
+    use the new one.
+  - The Windows package requires no installation: unzip the folder and run
+    MagicBox.exe.
+
+v5.0 — June 2026
+----------------
+
+Romanian-language release. 15 guided exercises, 12 apps and games, support for
+the BME280, VEML7700, SCD41 and MPU-6500 sensors over USB or WiFi.

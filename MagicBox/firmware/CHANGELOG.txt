@@ -1,0 +1,186 @@
+﻿FIRMWARE CHANGELOG
+==================
+
+Firmware for the ESP32 box: serial_wifi_v2_2_5, which drives all four
+sensors and talks to the application over both USB and WiFi. Newest version
+first.
+
+A USB-only variant, serial_only_v1_3_4, is kept in the project for boxes
+that never use WiFi. Its version numbers advance in step with the WiFi
+firmware and each entry below says when a change applies to it too.
+
+v2.2.5 (and serial_only v1.3.4) — 23 September 2026
+---------------------------------------------------
+
+Changed:
+
+  - Outdoors in sunshine the light reading no longer stops at about 3 800 lux.
+    The light sensor used to run at one fixed sensitivity, so
+    anything brighter than a well-lit room read the same "3 775". It now picks
+    its sensitivity by itself, like a camera, and reads from a dark cupboard
+    (below 0.01 lux) up to direct summer sunlight (readings stop at
+    150 000 lux). The Light Is Everywhere, Solar Energy and Solar Panels
+    activities can now be done outside. Readings under 10 lux carry two
+    decimals. Comparisons (shade against sun, morning against noon) are
+    reliable at every level; the absolute value above about 10 000 lux has
+    not yet been checked against a reference lux meter, so treat it as
+    approximate until that bench test is done.
+  - The WHITE and RAW light columns keep the scale they always had, so
+    files recorded with older firmware can still be compared with new ones;
+    in bright light they may now exceed 65 535.
+  - Fans, motors and a tapping pencil no longer show up as a fake slow wobble
+    in the motion charts. The motion sensor measured vibrations far
+    faster than the 50 readings a second the box sends, and those fast shakes
+    folded back into slow, invented swings (the same effect that makes wheels
+    appear to turn backwards on film). A filter inside the sensor now removes
+    everything faster than about 20 per second before it is sampled. Real
+    movements of the box — tilting, rocking, shaking it by hand as in
+    Resonance — are unaffected. A sharp tap on the table is now caught every
+    time instead of only when it happened to fall on a sample, with a
+    slightly lower and wider peak than before.
+  - The USB-only firmware (serial_only v1.3.4) now reads the CO₂ sensor,
+    with the same values and the same 5-second rhythm as the WiFi firmware.
+    With v1.3.3 or older, a box connected by USB shows no CO₂ at all.
+
+Fixed:
+
+  - Motion charts no longer freeze for 1.5 s at a time when a firewall blocks the box.
+    The box used to wait for an answer
+    every five seconds and sent no motion data while it waited. It now keeps
+    measuring while it tries, and waits longer between attempts (5 s, 10 s,
+    20 s, 40 s, then once a minute). After the firewall is fixed, the box
+    connects within a minute, or at once if the laptop application is
+    restarted.
+
+Which firmware the activities need:
+
+  - Anything with CO₂ (The Air We Breathe, Indoor Pollution, CO₂ and
+    Photosynthesis, Air Quality, Greenhouse Effect): the CO₂ sensor, and
+    serial_wifi v2.2.0 or newer, or serial_only v1.3.4 or newer.
+  - Light Is Everywhere, Solar Energy, Solar Panels outdoors in sunlight:
+    v2.2.5 / v1.3.4 or newer (older firmware stops at about 3 800 lux).
+  - Everything else: any version from v2.2.1 / v1.3.0 on (older ones report
+    the motion axes upside down).
+
+v2.2.4 — 13 June 2026
+---------------------
+
+Fixed:
+
+  - The box could stop sending data until it was unplugged. If a sensor was
+    interrupted mid-transfer, it could hold the I²C data line low forever and
+    freeze the whole bus. The firmware now recovers the bus by clocking it nine
+    times and issuing a stop condition, the same trick used in industrial
+    controllers.
+  - Sensors are retried during start-up rather than being declared missing on the
+    first failure, which cures most "sensor not found" reports caused by a slow
+    power-up.
+  - Recovery attempts are capped at 30, so a genuinely broken sensor no longer
+    puts the box into an endless retry loop that would block the others.
+
+v2.2.3 — 12 June 2026
+---------------------
+
+Fixed:
+
+  - The motion sensor (MPU-6500) now heals itself: if it stops responding during
+    a lesson, the firmware reinitialises it instead of streaming zeros for the
+    rest of the session.
+
+v2.2.2 — 12 June 2026
+---------------------
+
+Fixed:
+
+  - The motion sensor disappeared when the CO₂ sensor was fitted. The I²C bus
+    ran at 400 kHz, which the SCD41 could not sustain; it corrupted traffic and
+    the MPU-6500 vanished from the bus. The bus now runs at 100 kHz, which all
+    four sensors tolerate.
+
+v2.2.1 — 12 June 2026
+---------------------
+
+Changed:
+
+  - Temperature, humidity and pressure are reported to two decimal places.
+
+Fixed:
+
+  - Corrected the motion sensor's orientation so the reported axes match the way
+    the sensor is physically mounted in the box.
+
+v2.2.0 — 12 June 2026
+---------------------
+
+Added:
+
+  - CO₂ support (SCD41). The sensor completes a measurement every five
+    seconds, which is a hardware limit; the firmware holds the last value and
+    repeats it in the 1 Hz packet so the stream stays regular. Adds CO2,
+    TEMP_SCD and HUM_SCD to the sensor list.
+
+v2.1.0 — 11 June 2026
+---------------------
+
+Added:
+
+  - WiFi setup without editing the sketch. On first start, or whenever no
+    saved network is reachable, the box opens an open access point called
+    CutiaMagica-XXXX. Connecting to it opens a configuration page
+    automatically (captive portal at 192.168.4.1) where the class network and
+    password are entered once and stored on the box.
+
+Removed:
+
+  - Hard-coded WiFi credentials. Each box no longer needs its own build.
+
+v2.0.0 — 11 June 2026
+---------------------
+
+Added:
+
+  - WiFi transport. The laptop application broadcasts a UDP beacon every
+    three seconds on port 8766; the box listens for it, opens a TCP connection
+    and streams the same lines it prints over USB. The application discards
+    duplicates by timestamp, so running both transports at once is safe and a
+    cable can be unplugged mid-lesson without losing the session.
+
+------------------------------------------------------------------------
+
+The versions below predate WiFi support. They are the same sensor code this
+firmware grew out of, kept here because the faults they fixed still explain
+how the box behaves.
+
+v1.2.0 — 11 June 2026
+---------------------
+
+Added:
+
+  - The firmware version is printed at boot (FW: x.y.z), so the version in use
+    can be confirmed without opening the sketch.
+
+Fixed:
+
+  - The motion-sensor mounting correction is now a proper 180° rotation rather
+    than a mirrored Z axis, which had left one axis with the wrong sign.
+
+v1.1.0 — 2 May 2026
+-------------------
+
+Fixed:
+
+  - Every box reported the same identifier. The device ID was derived from
+    the part of the MAC address shared by all ESP32 chips; it now uses the unique
+    bytes, so BOX_XXXX differs per box — which is what makes multi-box
+    activities such as Air Quality possible.
+  - The 1 Hz data packet is always sent, even when one sensor fails, so a single
+    faulty sensor no longer silences the whole box.
+  - Gyroscope values gained a third decimal place, and the output buffer was
+    enlarged to prevent truncated lines on long packets.
+
+v1.0.0 — 2 May 2026
+-------------------
+
+First firmware: VEML7700 light, BME280 temperature/humidity/pressure and
+MPU-6500 motion over USB serial at 115200 baud, emitting one JSON line per
+second plus a 50 Hz motion stream.
