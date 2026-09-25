@@ -100,8 +100,6 @@ să-l citiți pe GitHub, sau pe ⬇ ca să-l descărcați.
 
 | | Română | English |
 |---|---|---|
-| Ghidurile pentru profesori | [ghiduri_profesor](MagicBox/docs/ro/ghiduri_profesor) | [teacher_guides](MagicBox/docs/en/teacher_guides) |
-| Fișele pentru elevi | [fise_elev](MagicBox/docs/ro/fise_elev) | [student_sheets](MagicBox/docs/en/student_sheets) |
 | Primii pași: instalare, conectare, probleme frecvente | [primii_pasi.pdf](MagicBox/docs/ro/primii_pasi.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/primii_pasi.pdf) | [first_steps.pdf](MagicBox/docs/en/first_steps.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/first_steps.pdf) |
 | Activitățile pe clase și discipline (o pagină) | [activitatile_pe_clase_si_discipline.pdf](MagicBox/docs/ro/activitatile_pe_clase_si_discipline.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/activitatile_pe_clase_si_discipline.pdf) | [activities_by_grade_and_subject.pdf](MagicBox/docs/en/activities_by_grade_and_subject.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/activities_by_grade_and_subject.pdf) |
 | Planul curricular (ce activitate la ce clasă) | [plan_curricular.pdf](MagicBox/docs/ro/plan_curricular.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/plan_curricular.pdf) | [curriculum_plan.pdf](MagicBox/docs/en/curriculum_plan.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/curriculum_plan.pdf) |
