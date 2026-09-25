@@ -4,7 +4,7 @@
 
 [English](README.md) · **Română**
 
-**Versiunea 5.4.3** · Windows 10 / 11 · aplicația și documentele în română și în engleză
+**Versiunea 5.5.0** · Windows 10 / 11 · aplicația în engleză, română, franceză și germană; documentele în română și în engleză
 
 ## Pentru profesori
 
@@ -28,14 +28,14 @@ alt="Un experiment ghidat: Termometrul magic"></p>
 Fiecare ecran și fiecare buton sunt explicate, cu imagini, în
 [Manualul de utilizare](MagicBox/docs/ro/manual_de_utilizare.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/manual_de_utilizare.pdf).*
 
-### ⬇️ [Descărcați MagicBox 5.4.3 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.3/MagicBox_v5.4.3.zip)
+### ⬇️ [Descărcați MagicBox 5.5.0 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.5.0/MagicBox_v5.5.0.zip)
 
 Arhiva conține tot: aplicația, ghidurile, fișele, firmware-ul cutiei și
 ghidul de instalare a firmware-ului, toate din aceeași versiune.
 
 Doar documentele (ghiduri, fișe, Primii pași, manualul tehnic, ghidul de
 firmware, în română și engleză, în aceleași foldere ca în aplicație):
-**[MagicBox_docs_v5.4.3.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.3/MagicBox_docs_v5.4.3.zip)**. Fiecare PDF de mai jos se
+**[MagicBox_docs_v5.5.0.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.5.0/MagicBox_docs_v5.5.0.zip)**. Fiecare PDF de mai jos se
 deschide și aici, pe GitHub; săgeata ⬇ de lângă el îl descarcă.
 
 ---
@@ -51,6 +51,10 @@ deschide și aici, pe GitHub; săgeata ⬇ de lângă el îl descarcă.
    semnătură comercială, nu pentru că ar fi periculoasă.
 4. Când Windows întreabă despre rețea, bifați **Rețele private** și apăsați
    **Permiteți accesul**. Altfel cutiile nu se pot conecta prin WiFi.
+
+Aplicația pornește în engleză. Pentru română: **Settings → Language and
+display → Language: Română**, apoi reporniți-o. Aplicația mai are franceza și
+germana; manualele sunt în română și engleză.
 
 Pașii de la instalare la prima cutie pe ecran, cu un tabel „ce vedeți → ce
 faceți”, sunt în [Primii pași](MagicBox/docs/ro/primii_pasi.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/primii_pasi.pdf) (două pagini).
@@ -104,7 +108,7 @@ cutiilor**. Nu e nevoie de alt firmware.
 ## 3. Documentele
 
 Toate documentele într-o singură arhivă:
-**[MagicBox_docs_v5.4.3.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.3/MagicBox_docs_v5.4.3.zip)**. Un PDF anume: clic pe nume ca
+**[MagicBox_docs_v5.5.0.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.5.0/MagicBox_docs_v5.5.0.zip)**. Un PDF anume: clic pe nume ca
 să-l citiți pe GitHub, sau pe ⬇ ca să-l descărcați.
 
 | | Română | English |

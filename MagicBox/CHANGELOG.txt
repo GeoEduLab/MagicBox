@@ -3,6 +3,48 @@
 
 All notable changes to MagicBox, newest first.
 
+v5.5.0 — 25 September 2026
+--------------------------
+
+Added:
+
+  - The application speaks French and German too. Settings → Language
+    now offers Română, English, Français and Deutsch; the choice applies after
+    a restart. Numbers use the decimal comma in Romanian, French and German.
+    The manuals, guides and sheets stay in Romanian and English; in French
+    and German, "Open guide" opens the English ones.
+  - The application says when a new version is on GitHub. At start-up,
+    at most once a day, it asks GitHub for the number of the latest version;
+    when there is a newer one, the Home page shows a green note with a
+    Download button that opens the download page, and "What's new" with the
+    list of changes in the application's language. Without internet nothing
+    happens, nothing is installed by itself, and Settings → About MagicBox
+    switches it off.
+  - "Restart now" after choosing a language. The application closes and
+    opens again by itself in the new language, in a few seconds; the boxes
+    reconnect on their own and saved measurements are kept. Before, the
+    teacher had to close it and start it again by hand.
+
+Changed:
+
+  - The application starts in English. For Romanian: Settings →
+    Language → Română, then restart; from then on it starts in Romanian.
+    A computer where Romanian was picked in Settings keeps it. The manuals and
+    the download page explain the switch.
+  - Live Data leaves more room for the charts with several boxes. When
+    two or more boxes share a group, their value cards become short (value
+    and unit on one line), so the charts below stay visible on a laptop
+    screen.
+  - Activity cards in French and German wrap their "grades · ages ·
+    time" line instead of cutting off the time.
+
+Removed:
+
+  - The USB-only firmware (serial_only). The WiFi firmware works over the
+    USB cable as well, so one firmware now covers every box. A box that still
+    runs the old USB-only firmware is recognised, and the application asks to
+    flash the WiFi firmware 2.2.6 on it (before, it suggested USB-only 1.3.4).
+
 v5.4.3 — 25 September 2026
 --------------------------
 

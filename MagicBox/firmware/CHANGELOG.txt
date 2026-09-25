@@ -5,9 +5,22 @@ Firmware for the ESP32 box: serial_wifi_v2_2_6, which drives all four
 sensors and talks to the application over both USB and WiFi. Newest version
 first.
 
-A USB-only variant, serial_only_v1_3_4, is kept in the project for boxes
-that never use WiFi. Its version numbers advance in step with the WiFi
-firmware and each entry below says when a change applies to it too.
+Until 25 September 2026 there was also a USB-only variant, serial_only
+(1.x, last v1.3.4), whose versions advanced in step with the WiFi firmware;
+the older entries below still say when a change applied to it. It is no
+longer shipped.
+
+Retired: serial_only (USB-only), 25 September 2026
+--------------------------------------------------
+
+  - The USB-only firmware serial_only is no longer shipped. The WiFi
+    firmware works over the USB cable as well, so one firmware now covers
+    every box, whether the class uses the cable, WiFi or both. There is one
+    sketch to flash and one guide to follow.
+  - **A box still running serial_only should be reflashed with
+    serial_wifi_v2_2_6** (see FLASHING_GUIDE.pdf). Nothing else changes for
+    it: over the cable it works exactly as before. The application recognises
+    such a box and says so when it connects.
 
 v2.2.6 — 24 September 2026
 --------------------------
