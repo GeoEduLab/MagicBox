@@ -3,6 +3,17 @@
 
 All notable changes to MagicBox, newest first.
 
+v5.4.3 — 25 September 2026
+--------------------------
+
+Changed:
+
+  - The user manual shows the installation with pictures: unzipping,
+    the extracted folder, the Windows warning and the language setting. It
+    also says that several boxes can be connected at once, over USB or WiFi,
+    and that a box on WiFi can be plugged into USB too without harm.
+  - The manuals and the download page ask for a USB Type-C data cable.
+
 v5.4.2 — 25 September 2026
 --------------------------
 

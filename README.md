@@ -4,7 +4,7 @@
 
 **English** · [Română](README_RO.md)
 
-**Version 5.4.2** · Windows 10 / 11 · the app and the documents in Romanian and English
+**Version 5.4.3** · Windows 10 / 11 · the app and the documents in Romanian and English
 
 ## For teachers
 
@@ -27,14 +27,14 @@ alt="A guided experiment: The Magic Thermometer"></p>
 Every screen and every button is explained, with pictures, in the
 [User manual](MagicBox/docs/en/user_manual.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/user_manual.pdf).*
 
-### ⬇️ [Download MagicBox 5.4.2 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.2/MagicBox_v5.4.2.zip)
+### ⬇️ [Download MagicBox 5.4.3 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.3/MagicBox_v5.4.3.zip)
 
 The archive holds everything: the app, the guides, the sheets, the box
 firmware and its flashing guide, all from the same version.
 
 The documents alone (guides, sheets, First steps, the technical manual, the
 flashing guide, in English and Romanian, in the same folders as in the app):
-**[MagicBox_docs_v5.4.2.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.2/MagicBox_docs_v5.4.2.zip)**. Every PDF below also opens here
+**[MagicBox_docs_v5.4.3.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.3/MagicBox_docs_v5.4.3.zip)**. Every PDF below also opens here
 on GitHub; the ⬇ arrow next to it downloads it.
 
 ---
@@ -55,7 +55,7 @@ afișarea → Limba:** (Settings → Language), then restart it. The steps from 
 download to the first box on screen, with a "what you see → what to do" table,
 are in [First steps](MagicBox/docs/en/first_steps.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/first_steps.pdf) (two pages).
 
-**Over USB:** use a *data* cable. If the box does not appear within
+**Over USB:** use a USB Type-C *data* cable. If the box does not appear within
 10 seconds, install the board driver once:
 [CP210x](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
 or [CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html).
@@ -103,7 +103,7 @@ other firmware is needed.
 
 ## 3. The documents
 
-All of them in one archive: **[MagicBox_docs_v5.4.2.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.2/MagicBox_docs_v5.4.2.zip)**. A
+All of them in one archive: **[MagicBox_docs_v5.4.3.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.3/MagicBox_docs_v5.4.3.zip)**. A
 single PDF: click its name to read it on GitHub, or ⬇ to download it.
 
 | | English | Română |

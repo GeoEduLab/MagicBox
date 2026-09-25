@@ -4,7 +4,7 @@
 
 [English](README.md) · **Română**
 
-**Versiunea 5.4.2** · Windows 10 / 11 · aplicația și documentele în română și în engleză
+**Versiunea 5.4.3** · Windows 10 / 11 · aplicația și documentele în română și în engleză
 
 ## Pentru profesori
 
@@ -28,14 +28,14 @@ alt="Un experiment ghidat: Termometrul magic"></p>
 Fiecare ecran și fiecare buton sunt explicate, cu imagini, în
 [Manualul de utilizare](MagicBox/docs/ro/manual_de_utilizare.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/manual_de_utilizare.pdf).*
 
-### ⬇️ [Descărcați MagicBox 5.4.2 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.2/MagicBox_v5.4.2.zip)
+### ⬇️ [Descărcați MagicBox 5.4.3 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.3/MagicBox_v5.4.3.zip)
 
 Arhiva conține tot: aplicația, ghidurile, fișele, firmware-ul cutiei și
 ghidul de instalare a firmware-ului, toate din aceeași versiune.
 
 Doar documentele (ghiduri, fișe, Primii pași, manualul tehnic, ghidul de
 firmware, în română și engleză, în aceleași foldere ca în aplicație):
-**[MagicBox_docs_v5.4.2.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.2/MagicBox_docs_v5.4.2.zip)**. Fiecare PDF de mai jos se
+**[MagicBox_docs_v5.4.3.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.3/MagicBox_docs_v5.4.3.zip)**. Fiecare PDF de mai jos se
 deschide și aici, pe GitHub; săgeata ⬇ de lângă el îl descarcă.
 
 ---
@@ -55,7 +55,7 @@ deschide și aici, pe GitHub; săgeata ⬇ de lângă el îl descarcă.
 Pașii de la instalare la prima cutie pe ecran, cu un tabel „ce vedeți → ce
 faceți”, sunt în [Primii pași](MagicBox/docs/ro/primii_pasi.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/primii_pasi.pdf) (două pagini).
 
-**Prin USB:** folosiți un cablu *de date*. Dacă cutia nu apare în 10 secunde,
+**Prin USB:** folosiți un cablu USB de tip C, *de date*. Dacă cutia nu apare în 10 secunde,
 instalați o dată driverul plăcii:
 [CP210x](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
 sau [CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html).
@@ -104,7 +104,7 @@ cutiilor**. Nu e nevoie de alt firmware.
 ## 3. Documentele
 
 Toate documentele într-o singură arhivă:
-**[MagicBox_docs_v5.4.2.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.2/MagicBox_docs_v5.4.2.zip)**. Un PDF anume: clic pe nume ca
+**[MagicBox_docs_v5.4.3.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.3/MagicBox_docs_v5.4.3.zip)**. Un PDF anume: clic pe nume ca
 să-l citiți pe GitHub, sau pe ⬇ ca să-l descărcați.
 
 | | Română | English |
