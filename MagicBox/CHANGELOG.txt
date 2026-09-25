@@ -3,6 +3,20 @@
 
 All notable changes to MagicBox, newest first.
 
+v5.4.2 — 25 September 2026
+--------------------------
+
+Added:
+
+  - A user manual with pictures of the application (Manual de utilizare /
+    User manual, in docs). It goes screen by screen, from downloading the
+    package on GitHub to the last setting: every screenshot has red numbers
+    on the buttons and a table saying what each one does. It also covers
+    installing, connecting a box over USB and WiFi, and what to do when
+    something does not work.
+  - The download page shows the application: the Home page and a guided
+    experiment, in the page's language.
+
 v5.4.1 — 25 September 2026
 --------------------------
 

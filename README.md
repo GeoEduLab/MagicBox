@@ -4,7 +4,7 @@
 
 **English** · [Română](README_RO.md)
 
-**Version 5.4.1** · Windows 10 / 11 · the app and the documents in Romanian and English
+**Version 5.4.2** · Windows 10 / 11 · the app and the documents in Romanian and English
 
 ## For teachers
 
@@ -18,14 +18,23 @@ English.** The guide covers preparing the lesson, running it, the questions to
 ask and where pupils usually go wrong. In the app, the **Open guide** button
 on each activity opens the right one.
 
-### ⬇️ [Download MagicBox 5.4.1 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.1/MagicBox_v5.4.1.zip)
+<p align="center"><img src="img/app_home_en.png" width="49%"
+alt="The Home page: the connected boxes and their latest values">
+<img src="img/app_exercise_en.png" width="49%"
+alt="A guided experiment: The Magic Thermometer"></p>
+
+*Left: the Home page, with the connected boxes. Right: a guided experiment.
+Every screen and every button is explained, with pictures, in the
+[User manual](MagicBox/docs/en/user_manual.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/user_manual.pdf).*
+
+### ⬇️ [Download MagicBox 5.4.2 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.2/MagicBox_v5.4.2.zip)
 
 The archive holds everything: the app, the guides, the sheets, the box
 firmware and its flashing guide, all from the same version.
 
 The documents alone (guides, sheets, First steps, the technical manual, the
 flashing guide, in English and Romanian, in the same folders as in the app):
-**[MagicBox_docs_v5.4.1.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.1/MagicBox_docs_v5.4.1.zip)**. Every PDF below also opens here
+**[MagicBox_docs_v5.4.2.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.2/MagicBox_docs_v5.4.2.zip)**. Every PDF below also opens here
 on GitHub; the ⬇ arrow next to it downloads it.
 
 ---
@@ -94,12 +103,13 @@ other firmware is needed.
 
 ## 3. The documents
 
-All of them in one archive: **[MagicBox_docs_v5.4.1.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.1/MagicBox_docs_v5.4.1.zip)**. A
+All of them in one archive: **[MagicBox_docs_v5.4.2.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.2/MagicBox_docs_v5.4.2.zip)**. A
 single PDF: click its name to read it on GitHub, or ⬇ to download it.
 
 | | English | Română |
 |---|---|---|
 | First steps: installing, connecting, common problems | [first_steps.pdf](MagicBox/docs/en/first_steps.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/first_steps.pdf) | [primii_pasi.pdf](MagicBox/docs/ro/primii_pasi.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/primii_pasi.pdf) |
+| User manual: every screen and every button, with pictures | [user_manual.pdf](MagicBox/docs/en/user_manual.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/user_manual.pdf) | [manual_de_utilizare.pdf](MagicBox/docs/ro/manual_de_utilizare.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/manual_de_utilizare.pdf) |
 | Activities by grade and subject (one page) | [activities_by_grade_and_subject.pdf](MagicBox/docs/en/activities_by_grade_and_subject.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/activities_by_grade_and_subject.pdf) | [activitatile_pe_clase_si_discipline.pdf](MagicBox/docs/ro/activitatile_pe_clase_si_discipline.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/activitatile_pe_clase_si_discipline.pdf) |
 | Curriculum plan (which activity for which grade) | [curriculum_plan.pdf](MagicBox/docs/en/curriculum_plan.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/curriculum_plan.pdf) | [plan_curricular.pdf](MagicBox/docs/ro/plan_curricular.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/plan_curricular.pdf) |
 | Technical manual and troubleshooting | [technical_manual.pdf](MagicBox/docs/en/technical_manual.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/technical_manual.pdf) | [manual_tehnic.pdf](MagicBox/docs/ro/manual_tehnic.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/manual_tehnic.pdf) |
