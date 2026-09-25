@@ -4,7 +4,7 @@
 
 **English** · [Română](README_RO.md)
 
-**Version 5.4** · Windows 10 / 11 · the app and the documents in Romanian and English
+**Version 5.4.1** · Windows 10 / 11 · the app and the documents in Romanian and English
 
 ## For teachers
 
@@ -18,7 +18,7 @@ English.** The guide covers preparing the lesson, running it, the questions to
 ask and where pupils usually go wrong. In the app, the **Open guide** button
 on each activity opens the right one.
 
-### ⬇️ [Download MagicBox 5.4 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4/MagicBox_v5.4.zip)
+### ⬇️ [Download MagicBox 5.4.1 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.1/MagicBox_v5.4.1.zip)
 
 The archive holds everything: the app, the guides, the sheets, the box
 firmware and its flashing guide, all from the same version.
@@ -46,14 +46,29 @@ are in [First steps](MagicBox/docs/en/first_steps.pdf) (two pages).
 [CP210x](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
 or [CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html).
 
-**Over WiFi:** the first time, the box opens a network called
-**MagicBox-XXXX** (**CutiaMagica-XXXX** on firmware older than 2.2.6). Join it
-with a phone (if it says the network has no internet, choose to stay
-connected, e.g. *Connect only this time*) and pick the class network on the
-setup page; if the page does not open by itself, go to http://192.168.4.1.
-The box sees only 2.4 GHz networks. The computer and the boxes must share a network; the app
-finds them on its own. If the school network does not work, use a phone
-hotspot.
+**Over WiFi:** once per box, from a phone.
+
+<p align="center"><img src="img/wifi_setup.png" width="100%"
+alt="Connecting a box to WiFi from a phone, in four steps"></p>
+
+1. Switch the box on. The first time, it opens a network called
+   **MagicBox-XXXX** (XXXX = the last four characters of the box ID;
+   **CutiaMagica-XXXX** on firmware older than 2.2.6). Tap it in the phone's
+   WiFi settings.
+2. The phone says the network has no internet (on Samsung: *Internet may not
+   be available*): choose **Connect only this time**.
+3. The phone stays on **MagicBox-XXXX**, "without internet": that is normal.
+4. The setup page opens by itself; if it does not, open
+   **http://192.168.4.1** in the browser (d). Pick the class network from the
+   list (a), type its password (b) and tap **Save and connect** (c). The box
+   restarts and joins the network; the app finds it on its own.
+
+The box sees **2.4 GHz networks only**: on a dual-band router keep the 2.4 GHz
+band switched on. The computer and the boxes must be on the same network. If
+the school network does not work (a sign-in with a user name *and* a password,
+or devices that cannot see each other), use a phone hotspot. To change
+network: hold the box's BOOT button while switching it on, and it forgets the
+saved one.
 
 **Sensors:** the box has three sockets for four sensors, so one is always
 left out, and it shows as `FAIL` at power-on: that is normal. With the box

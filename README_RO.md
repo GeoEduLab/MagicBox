@@ -4,7 +4,7 @@
 
 [English](README.md) · **Română**
 
-**Versiunea 5.4** · Windows 10 / 11 · aplicația și documentele în română și în engleză
+**Versiunea 5.4.1** · Windows 10 / 11 · aplicația și documentele în română și în engleză
 
 ## Pentru profesori
 
@@ -19,7 +19,7 @@ română și în engleză.** Ghidul spune cum pregătiți ora, cum o desfășura
 ce întrebări puneți și unde greșesc de obicei elevii. În aplicație, butonul
 **Deschide ghidul** de pe fiecare activitate deschide ghidul potrivit.
 
-### ⬇️ [Descărcați MagicBox 5.4 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4/MagicBox_v5.4.zip)
+### ⬇️ [Descărcați MagicBox 5.4.1 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.4.1/MagicBox_v5.4.1.zip)
 
 Arhiva conține tot: aplicația, ghidurile, fișele, firmware-ul cutiei și
 ghidul de instalare a firmware-ului, toate din aceeași versiune.
@@ -46,14 +46,29 @@ instalați o dată driverul plăcii:
 [CP210x](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
 sau [CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html).
 
-**Prin WiFi:** prima dată, cutia face o rețea **MagicBox-XXXX**
-(**CutiaMagica-XXXX** la firmware mai vechi de 2.2.6). Conectați un telefon la
-ea (dacă telefonul spune că rețeaua nu are internet, alegeți să rămâneți
-conectat, de exemplu *Connect only this time*) și alegeți rețeaua clasei în
-pagina de configurare; dacă pagina nu se deschide singură, mergeți la
-http://192.168.4.1. Cutia vede doar rețele de 2,4 GHz.
-Calculatorul și cutiile trebuie să fie în aceeași rețea; aplicația le găsește
-singură. Dacă rețeaua școlii nu merge, folosiți hotspotul unui telefon.
+**Prin WiFi:** o singură dată pentru fiecare cutie, de pe un telefon.
+
+<p align="center"><img src="img/wifi_setup.png" width="100%"
+alt="Conectarea cutiei la WiFi de pe telefon, în patru pași"></p>
+
+1. Porniți cutia. Prima dată ea face o rețea **MagicBox-XXXX** (XXXX = ultimele
+   patru caractere ale ID-ului cutiei; **CutiaMagica-XXXX** la firmware mai
+   vechi de 2.2.6). În setările WiFi ale telefonului, atingeți rețeaua ei.
+2. Telefonul spune că rețeaua nu are internet (pe Samsung: *Internet may not be
+   available*): alegeți **Connect only this time** (Conectare doar de data
+   aceasta).
+3. Telefonul rămâne conectat la **MagicBox-XXXX**, „fără internet”: e normal.
+4. Pagina de configurare se deschide singură; dacă nu, deschideți în browser
+   **http://192.168.4.1** (d). Alegeți rețeaua clasei din listă (a), scrieți
+   parola (b) și apăsați **Save and connect** (c). Cutia repornește și intră în
+   rețea; aplicația o găsește singură.
+
+Cutia vede doar rețele de **2,4 GHz**: la un router cu două benzi, lăsați banda
+de 2,4 GHz pornită. Calculatorul și cutiile trebuie să fie în aceeași rețea.
+Dacă rețeaua școlii nu merge (rețele cu nume de utilizator *și* parolă, sau
+care nu lasă aparatele să se vadă între ele), folosiți hotspotul unui telefon.
+Pentru o altă rețea: țineți apăsat butonul BOOT al cutiei cât o porniți, iar
+cutia uită rețeaua salvată.
 
 **Senzorii:** cutia are trei socluri pentru patru senzori, deci unul lipsește
 mereu, iar la pornire apare ca `FAIL`: e normal. Cu cutia oprită, puneți

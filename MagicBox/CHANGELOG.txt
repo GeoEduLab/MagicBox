@@ -3,6 +3,29 @@
 
 All notable changes to MagicBox, newest first.
 
+v5.4.1 — 25 September 2026
+--------------------------
+
+Added:
+
+  - Connecting a box over WiFi now has pictures, in First steps (Primii
+    pași) and on the download page: the four phone screens, from joining
+    MagicBox-XXXX to "Save and connect", with each tap marked. Until now the
+    only picture was in the flashing guide, where nobody looked for it.
+
+Fixed:
+
+  - A box's card on the Home page shows the sensors plugged into it. It
+    always showed Temperature, CO₂ and Light, so a box with the motion sensor
+    in showed no motion and a "—" where CO₂ used to be. The card now has one
+    value for each sensor the box has, including a new Tilt value (how far
+    the box leans from lying flat, 0–90°) for the motion sensor.
+  - Swapping a sensor is noticed. When a sensor was changed while the box
+    was off, the card and the box picker kept the old one as well, so an
+    activity could pick a box for CO₂ that no longer had the CO₂ sensor. After
+    the box is switched back on, the application goes by what the box reports
+    now. The measurements already taken stay in the session.
+
 v5.4 — 24 September 2026
 ------------------------
 
