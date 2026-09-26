@@ -3,6 +3,22 @@
 
 All notable changes to MagicBox, newest first.
 
+v5.6.1 — 26 September 2026
+--------------------------
+
+Added:
+
+  - A tick put on by mistake no longer turns a correct box upside down.
+    Before "Motion sensor upside down" changes a box, the application looks
+    at what the box reads. If the box is lying flat and already reads about
+    +1 g on acceleration Z, it is the right way up, and the application asks
+    first: "... is already the right way up. If you change the tick, it will
+    read upside down (about −1 g). Change it anyway?" The answer No leaves
+    the box as it was. This matters most from firmware 2.3.0, where the box
+    keeps the setting and a wrong tick would follow it to every computer.
+    A box that reads −1 g, or one held in the hand, is changed without a
+    question, as before.
+
 v5.6.0 — 26 September 2026
 --------------------------
 

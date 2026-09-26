@@ -4,7 +4,7 @@
 
 **English** · [Română](README_RO.md)
 
-**Version 5.6.0** · Windows 10 / 11 · the app in English, Romanian, French and German; the documents in English and Romanian
+**Version 5.6.1** · Windows 10 / 11 · the app in English, Romanian, French and German; the documents in English and Romanian
 
 ## For teachers
 
@@ -27,14 +27,14 @@ alt="A guided experiment: The Magic Thermometer"></p>
 Every screen and every button is explained, with pictures, in the
 [User manual](MagicBox/docs/en/user_manual.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/en/user_manual.pdf).*
 
-### ⬇️ [Download MagicBox 5.6.0 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.0/MagicBox_v5.6.0.zip)
+### ⬇️ [Download MagicBox 5.6.1 (a single ZIP file)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.1/MagicBox_v5.6.1.zip)
 
 The archive holds everything: the app, the guides, the sheets, the box
 firmware and its flashing guide, all from the same version.
 
 The documents alone (guides, sheets, First steps, the technical manual, the
 flashing guide, in English and Romanian, in the same folders as in the app):
-**[MagicBox_docs_v5.6.0.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.0/MagicBox_docs_v5.6.0.zip)**. Every PDF below also opens here
+**[MagicBox_docs_v5.6.1.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.1/MagicBox_docs_v5.6.1.zip)**. Every PDF below also opens here
 on GitHub; the ⬇ arrow next to it downloads it.
 
 ---
@@ -104,7 +104,7 @@ other firmware is needed.
 
 ## 3. The documents
 
-All of them in one archive: **[MagicBox_docs_v5.6.0.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.0/MagicBox_docs_v5.6.0.zip)**. A
+All of them in one archive: **[MagicBox_docs_v5.6.1.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.1/MagicBox_docs_v5.6.1.zip)**. A
 single PDF: click its name to read it on GitHub, or ⬇ to download it.
 
 | | English | Română |

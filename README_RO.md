@@ -4,7 +4,7 @@
 
 [English](README.md) · **Română**
 
-**Versiunea 5.6.0** · Windows 10 / 11 · aplicația în engleză, română, franceză și germană; documentele în română și în engleză
+**Versiunea 5.6.1** · Windows 10 / 11 · aplicația în engleză, română, franceză și germană; documentele în română și în engleză
 
 ## Pentru profesori
 
@@ -28,14 +28,14 @@ alt="Un experiment ghidat: Termometrul magic"></p>
 Fiecare ecran și fiecare buton sunt explicate, cu imagini, în
 [Manualul de utilizare](MagicBox/docs/ro/manual_de_utilizare.pdf) [⬇](https://github.com/GeoEduLab/MagicBox/raw/main/MagicBox/docs/ro/manual_de_utilizare.pdf).*
 
-### ⬇️ [Descărcați MagicBox 5.6.0 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.0/MagicBox_v5.6.0.zip)
+### ⬇️ [Descărcați MagicBox 5.6.1 (un singur fișier ZIP)](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.1/MagicBox_v5.6.1.zip)
 
 Arhiva conține tot: aplicația, ghidurile, fișele, firmware-ul cutiei și
 ghidul de instalare a firmware-ului, toate din aceeași versiune.
 
 Doar documentele (ghiduri, fișe, Primii pași, manualul tehnic, ghidul de
 firmware, în română și engleză, în aceleași foldere ca în aplicație):
-**[MagicBox_docs_v5.6.0.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.0/MagicBox_docs_v5.6.0.zip)**. Fiecare PDF de mai jos se
+**[MagicBox_docs_v5.6.1.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.1/MagicBox_docs_v5.6.1.zip)**. Fiecare PDF de mai jos se
 deschide și aici, pe GitHub; săgeata ⬇ de lângă el îl descarcă.
 
 ---
@@ -108,7 +108,7 @@ cutiilor**. Nu e nevoie de alt firmware.
 ## 3. Documentele
 
 Toate documentele într-o singură arhivă:
-**[MagicBox_docs_v5.6.0.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.0/MagicBox_docs_v5.6.0.zip)**. Un PDF anume: clic pe nume ca
+**[MagicBox_docs_v5.6.1.zip](https://github.com/GeoEduLab/MagicBox/releases/download/v5.6.1/MagicBox_docs_v5.6.1.zip)**. Un PDF anume: clic pe nume ca
 să-l citiți pe GitHub, sau pe ⬇ ca să-l descărcați.
 
 | | Română | English |
