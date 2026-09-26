@@ -1,7 +1,7 @@
 ﻿FIRMWARE CHANGELOG
 ==================
 
-Firmware for the ESP32 box: serial_wifi_v2_2_6, which drives all four
+Firmware for the ESP32 box: serial_wifi_v2_3_0, which drives all four
 sensors and talks to the application over both USB and WiFi. Newest version
 first.
 
@@ -9,6 +9,34 @@ Until 25 September 2026 there was also a USB-only variant, serial_only
 (1.x, last v1.3.4), whose versions advanced in step with the WiFi firmware;
 the older entries below still say when a change applied to it. It is no
 longer shipped.
+
+v2.3.0 — 26 September 2026
+--------------------------
+
+Added:
+
+  - The box remembers which way up its motion sensor is mounted. Every
+    box built so far has the sensor upside down, and the firmware turns its
+    readings over (lying flat it reads +1 g on acceleration Z). That stays the
+    default, so a box moving from 2.2.6 to 2.3.0 reads exactly as before.
+    A box built on the new board, with the sensor the right way up, is set
+    once to "normal": tick "Motion sensor upside down" for it in Settings →
+    Box names (the application sends the setting to the box), or type
+    IMU_MOUNT NORMAL in the Serial Monitor of the Arduino IDE right after
+    flashing. The box keeps it through power-off, reflashing and the WiFi
+    reset with the BOOT button, and reads the right way up on every computer.
+  - The box announces the setting with its start-up lines
+    (IMU_MOUNT: FLIPPED or IMU_MOUNT: NORMAL), and prints those lines
+    again when it receives INFO, so the application learns the firmware
+    version of a box it joined while the box was already running.
+  - Commands work over the USB cable and over WiFi, in capitals or not, with
+    any line-ending setting of the Serial Monitor.
+
+Note:
+
+  - Boxes on 2.2.6 do not need this update, and the application does not
+    ask for it. Two boxes already in schools stay on 2.2.6 and are correct as
+    they are.
 
 Retired: serial_only (USB-only), 25 September 2026
 --------------------------------------------------
@@ -18,7 +46,7 @@ Retired: serial_only (USB-only), 25 September 2026
     every box, whether the class uses the cable, WiFi or both. There is one
     sketch to flash and one guide to follow.
   - **A box still running serial_only should be reflashed with
-    serial_wifi_v2_2_6** (see FLASHING_GUIDE.pdf). Nothing else changes for
+    serial_wifi_v2_2_6** (now serial_wifi_v2_3_0) (see FLASHING_GUIDE.pdf). Nothing else changes for
     it: over the cable it works exactly as before. The application recognises
     such a box and says so when it connects.
 

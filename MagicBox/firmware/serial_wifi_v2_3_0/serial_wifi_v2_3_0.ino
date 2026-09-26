@@ -31,6 +31,19 @@
  *   DEVICE: BOX_XXXX
  *   TYPE: MULTI
  *   SENSORS: LUX,WHITE,RAW,T,H,P,ALT,AX,AY,AZ,GX,GY,GZ,CO2,TEMP_SCD,HUM_SCD
+ *   FW: 2.3.0
+ *   IMU_MOUNT: FLIPPED            (or NORMAL, see below)
+ *
+ * Commands (one line, over USB or the WiFi link; the Arduino Serial
+ * Monitor works too, any line ending):
+ *   IMU_MOUNT NORMAL    the motion sensor sits the right way up on this
+ *                       board (the corrected PCB): readings pass unchanged
+ *   IMU_MOUNT FLIPPED   the sensor sits upside down (every box built before
+ *                       the corrected PCB): readings are turned over, the
+ *                       default
+ *   INFO                print the header lines again
+ * The mounting is kept in the box (NVS namespace "magicbox_hw"), survives
+ * power-off and reflashing, and is NOT erased by the BOOT-button WiFi reset.
  *
  * Loop output:
  *    1 Hz  {"id":"BOX_XXXX","ts_ms":N,"data":{"lux":...,"T":...,...}}
@@ -94,7 +107,12 @@
 //        is on it, retries the saved network every 2 minutes. The serial
 //        line says WHY a join failed (not found / 5 GHz, wrong password).
 //        The setup network is called MagicBox-XXXX (was CutiaMagica-XXXX).
-#define FW_VERSION "2.2.6"
+// 2.3.0  The box keeps which way up its motion sensor is mounted
+//        (IMU_MOUNT FLIPPED/NORMAL command, saved in NVS, announced as a
+//        header line), so boards with the sensor the right way up need no
+//        tick in the app. Default FLIPPED = same readings as 2.2.6.
+//        INFO command reprints the header lines.
+#define FW_VERSION "2.3.0"
 
 // ── Provisioning ────────────────────────────────────────────────
 #define AP_PREFIX        "MagicBox-"      // AP SSID = prefix + last 4 of device ID
@@ -137,15 +155,16 @@
 // TWO accel axes and the SAME two gyro axes must be negated to keep a
 // right-handed frame (never Z alone — that mirrors the frame).
 //   Flipped about X: negate AY, AZ, GY, GZ
-//   Flipped about Y: negate AX, AZ, GX, GZ  (current setting)
+//   Flipped about Y: negate AX, AZ, GX, GZ  (used)
 // Hardware tilt test (2026-06) showed roll mirrored with the X variant,
 // so the boards are mounted flipped about Y.
-#define IMU_SIGN_AX  -1
-#define IMU_SIGN_AY   1
-#define IMU_SIGN_AZ  -1
-#define IMU_SIGN_GX  -1
-#define IMU_SIGN_GY   1
-#define IMU_SIGN_GZ  -1
+// Every box built so far has the sensor this way (IMU_MOUNT FLIPPED, the
+// default). A board with the sensor the right way up is set once to
+// IMU_MOUNT NORMAL and its readings then pass unchanged.
+static const int8_t IMU_FLIP_SIGN[6] = { -1, 1, -1, -1, 1, -1 };  // AX AY AZ GX GY GZ
+#define HW_NAMESPACE  "magicbox_hw"   // separate from WiFi: BOOT reset keeps it
+#define HW_KEY_MOUNT  "imu_mount"     // 1 = FLIPPED (default), 0 = NORMAL
+static bool imu_flipped = true;
 
 // ── Device ID ───────────────────────────────────────────────────
 char DEVICE_ID[12];
@@ -187,6 +206,9 @@ static WifiState wifi_state = W_PORTAL;
 // Declared up here: the Arduino builder puts its prototypes before the
 // first function, and failKind() returns this type.
 enum FailKind { F_NONE, F_NOT_FOUND, F_PASSWORD, F_OTHER };
+// One command line being collected per source (USB serial, TCP); declared
+// here for the same reason.
+struct LineIn { String buf; unsigned long t_last; };
 
 Preferences prefs;
 WiFiUDP     udp;
@@ -226,6 +248,7 @@ static void sendHeadersTo(Print& out) {
   out.println("TYPE: MULTI");
   out.print("SENSORS: "); out.println(SENSOR_LIST.length() ? SENSOR_LIST : "NONE");
   out.println("FW: " FW_VERSION);
+  out.print("IMU_MOUNT: "); out.println(imu_flipped ? "FLIPPED" : "NORMAL");
 }
 
 // ── MPU-6500: write one register ────────────────────────────────
@@ -400,14 +423,65 @@ static bool mpuRead(float out[6]) {
   if (Wire.available() < 14) return false;
   uint8_t b[14];
   for (int i = 0; i < 14; i++) b[i] = Wire.read();
-  out[0] = IMU_SIGN_AX * (float)((int16_t)(b[0]  << 8 | b[1]))  / 4096.0f;
-  out[1] = IMU_SIGN_AY * (float)((int16_t)(b[2]  << 8 | b[3]))  / 4096.0f;
-  out[2] = IMU_SIGN_AZ * (float)((int16_t)(b[4]  << 8 | b[5]))  / 4096.0f;
+  out[0] = (float)((int16_t)(b[0]  << 8 | b[1]))  / 4096.0f;
+  out[1] = (float)((int16_t)(b[2]  << 8 | b[3]))  / 4096.0f;
+  out[2] = (float)((int16_t)(b[4]  << 8 | b[5]))  / 4096.0f;
   // b[6], b[7] = raw temperature (not used)
-  out[3] = IMU_SIGN_GX * (float)((int16_t)(b[8]  << 8 | b[9]))  / 65.5f;
-  out[4] = IMU_SIGN_GY * (float)((int16_t)(b[10] << 8 | b[11])) / 65.5f;
-  out[5] = IMU_SIGN_GZ * (float)((int16_t)(b[12] << 8 | b[13])) / 65.5f;
+  out[3] = (float)((int16_t)(b[8]  << 8 | b[9]))  / 65.5f;
+  out[4] = (float)((int16_t)(b[10] << 8 | b[11])) / 65.5f;
+  out[5] = (float)((int16_t)(b[12] << 8 | b[13])) / 65.5f;
+  if (imu_flipped)
+    for (int i = 0; i < 6; i++) out[i] *= IMU_FLIP_SIGN[i];
   return true;
+}
+
+// ── Commands (USB serial and the WiFi link) ─────────────────────
+static void sendHeadersAll() {
+  sendHeadersTo(Serial);
+  if (tcp.connected()) sendHeadersTo(tcp);
+}
+
+static void handleCommand(String cmd) {
+  cmd.trim();
+  cmd.toUpperCase();
+  if (!cmd.length()) return;
+  if (cmd == "IMU_MOUNT NORMAL" || cmd == "IMU_MOUNT FLIPPED") {
+    imu_flipped = cmd.endsWith("FLIPPED");
+    Preferences hw;
+    hw.begin(HW_NAMESPACE, false);
+    hw.putUChar(HW_KEY_MOUNT, imu_flipped ? 1 : 0);
+    hw.end();
+    Serial.printf("[IMU] Sensor mounting saved: %s\n",
+                  imu_flipped ? "FLIPPED (readings turned over)"
+                              : "NORMAL (readings unchanged)");
+    sendLine(String("IMU_MOUNT: ") + (imu_flipped ? "FLIPPED" : "NORMAL"));
+  } else if (cmd == "INFO") {
+    sendHeadersAll();
+  } else {
+    Serial.print("[CMD] Unknown command: ");
+    Serial.println(cmd);
+  }
+}
+
+// A line ends at CR or LF, or after 300 ms of silence, so the Serial
+// Monitor works with any line-ending setting.
+static LineIn serial_in = { "", 0 };
+static LineIn tcp_in    = { "", 0 };
+
+static void pollCommands(Stream& src, LineIn& in, unsigned long now) {
+  while (src.available()) {
+    char c = (char)src.read();
+    in.t_last = now;
+    if (c == '\n' || c == '\r') {
+      if (in.buf.length()) { handleCommand(in.buf); in.buf = ""; }
+    } else if (in.buf.length() < 64) {
+      in.buf += c;
+    }
+  }
+  if (in.buf.length() && now - in.t_last > 300) {
+    handleCommand(in.buf);
+    in.buf = "";
+  }
 }
 
 // ── TCP: non-blocking connect with exponential backoff ──────────
@@ -802,6 +876,7 @@ static void wifiLoop(unsigned long now) {
     if (tcpPollConnect(now)) {
       sendHeadersTo(tcp);
       tcp_announced = true;
+      tcp_in.buf = "";
       Serial.println("[WiFi] TCP connected: streaming");
     }
   } else if (server_port != 0 && now - t_last_tcp_try >= tcp_retry_ms) {
@@ -831,6 +906,14 @@ void setup() {
   }
   sta_ssid = prefs.getString("ssid", "");
   sta_pass = prefs.getString("pass", "");
+
+  {
+    Preferences hw;
+    hw.begin(HW_NAMESPACE, true);     // read-only; absent = default
+    imu_flipped = hw.getUChar(HW_KEY_MOUNT, 1) != 0;
+    hw.end();
+  }
+  Serial.printf("[IMU] Sensor mounting: %s\n", imu_flipped ? "FLIPPED" : "NORMAL");
 
   Wire.begin(21, 22);
   // 100 kHz, NOT 400: the SCD41 supports max 100 kHz I2C (Sensirion
@@ -925,6 +1008,8 @@ void loop() {
   unsigned long now = millis();
 
   wifiLoop(now);
+  pollCommands(Serial, serial_in, now);
+  if (tcp.connected()) pollCommands(tcp, tcp_in, now);
 
   #if HAS_VEML7700
   vemlService(now);   // auto-range: short register reads only, never waits

@@ -3,6 +3,36 @@
 
 All notable changes to MagicBox, newest first.
 
+v5.6.0 — 26 September 2026
+--------------------------
+
+Added:
+
+  - **Boxes with firmware 2.3.0 keep the "Motion sensor upside down" tick
+    themselves.** The boxes built so far have their motion sensor mounted
+    upside down, and the firmware corrects it; boxes on the new board will
+    have it the right way up. For a box with firmware 2.3.0, ticking the box
+    in Settings → Box names now sends the setting to the box, which remembers
+    it: the box then reads the right way up on every computer, including the
+    school laptops, with no tick to repeat on each of them. The box must be
+    connected when you tick it; if it does not answer, the tick springs back
+    and the row says so. The row also says "motion sensor setting kept in the
+    box". Boxes with older firmware keep the tick on the computer, as before.
+  - A tick made earlier moves into the box by itself. A box ticked on this
+    computer and then reflashed with 2.3.0 gets the setting at its next
+    connection, and the tick leaves the computer, so its data are never
+    turned over twice.
+  - **A box connected while it was already running now tells its firmware
+    version too.** Its start-up lines had gone by before the application
+    opened the port; the application now asks for them again (firmware 2.3.0
+    answers).
+
+Changed:
+
+  - Boxes on firmware 2.2.6 are not asked to update. Firmware 2.3.0 only
+    adds the setting above, which the boxes already in schools do not need.
+    Boxes older than 2.2.6 are still told that a newer version exists.
+
 v5.5.0 — 25 September 2026
 --------------------------
 
