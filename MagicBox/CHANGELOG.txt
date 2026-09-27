@@ -3,6 +3,48 @@
 
 All notable changes to MagicBox, newest first.
 
+v5.7.0 — 27 September 2026
+--------------------------
+
+Added:
+
+  - The guides, pupil sheets and manuals now exist in French and German.
+    Every activity's teacher guide and pupil sheet, First steps, the user
+    manual (with screenshots of the French or German screens), the technical
+    manual, the curriculum plan, the one-page index and the firmware flashing
+    guide, in the package under docs\fr\ and docs\de\. Buttons are named
+    in them exactly as the French or German application shows them.
+  - "Open guide" opens the guide in the language the application speaks.
+    Until now French and German opened the English guides; they now open
+    their own, and fall back to English only if a file is missing.
+  - The download page on GitHub has a French and a German version, and
+    every activity there links its guide and sheet in all four languages.
+  - Settings → Altitude Calibration can work the QNH out by itself. Enter
+    the school's altitude, connect a box and press "Set QNH from the school's
+    altitude": the application takes the pressure the box reads now and sets
+    the sea-level pressure so that the box shows exactly the school's
+    altitude. Until now the teacher had to raise or lower the QNH by hand
+    until the two agreed, and the school's altitude on its own changed
+    nothing outside the Weather Station, which looked as if the setting did
+    not work.
+
+Fixed:
+
+  - **The line under each guide's title said the application starts in
+    Romanian.** It has started in English since v5.5.0; the line now says
+    so, and tells a Romanian, French or German teacher where to switch.
+  - The guides caught up with the application. Translating them showed
+    places where they described an older version: they still offered the
+    USB-only firmware retired on 25 September, sent teachers to an "Export
+    CSV" button and a "Live Charts" page that are now the Excel button on
+    Data & Export and the Live Data page, said the Solar Energy chart holds
+    seven and a half minutes (it holds two) and described the CO₂ sensor as
+    the wrong kind. Fixed in every language, with a few pupil-sheet boxes
+    that ran off the edge of the page.
+  - German screens used two words for humidity ("Luftfeuchte" in some
+    activities, "Luftfeuchtigkeit" elsewhere); it is now "Luftfeuchtigkeit"
+    everywhere, in the application and in the guides.
+
 v5.6.1 — 26 September 2026
 --------------------------
 
