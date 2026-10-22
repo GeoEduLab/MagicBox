@@ -3,6 +3,66 @@
 
 All notable changes to MagicBox, newest first.
 
+v5.8.0 — 22 October 2026
+------------------------
+
+Added:
+
+  - **Two new lessons for the extra sensors, with teacher guides and pupil
+    sheets in all four languages.** Both are hidden at first, because the
+    classroom boxes cannot run them: tick them once in Settings → Visible
+    activities.
+    - Air Before and After Airing: one box with any of the CO₂, particle
+      and vapour sensors measures the aired room, the full room and the room
+      with the window open. Pupils find that the sensors disagree: CO₂ and
+      vapours fall when the room is aired, particles can stay or even rise
+      when the air outside is dusty. A table at the end puts the three phases
+      side by side, with the WHO guideline for particles.
+    - Soil and Water: pupils calibrate the soil probe in air and in water
+      (the box remembers it), then pour the same water on sand, garden soil
+      and clay and see which holds it best. It works with one box moved from
+      pot to pot, or with three boxes on one chart.
+  - Air Quality compares particles and vapours between places too. A box
+    with a particle or vapour sensor shows those values under its CO₂, and a
+    "Compare on the chart" switch puts PM2.5, TVOC or the VOC index of every
+    place on the shared chart. Boxes with CO₂ only look exactly as before.
+  - **The application shows the extra sensors of the EASE summer-school
+    firmware (2.4.x).** A box with a soil probe, an SGP30, an SGP41 or a
+    BMV080 particle sensor used to stream those readings into nothing: the
+    application kept only the four classroom sensors. Now Live Data has four
+    more groups, each with its cards and charts, and the readings go into the
+    CSV log and the Excel export with their units and an explanation:
+    - Gases: TVOC (ppb) and eCO₂ (an estimate, ppm) from the SGP30.
+    - Gas indices: the VOC and NOx indices (1-500) from the SGP41, in a
+      group of their own, so a box with only one of the two gas sensors does
+      not show the other's charts empty.
+    - Particles: PM1, PM2.5 and PM10 in µg/m³ from the BMV080 (the WHO
+      24-hour guidelines, 15 µg/m³ for PM2.5 and 45 for PM10, are in the
+      column guide).
+    - Soil: soil moisture (raw, about 200 in dry air to 2000 in wet soil)
+      and the probe's chip temperature.
+      The box's card on the Home page counts these sensors too and shows PM2.5,
+      the gas reading and soil moisture. A box with only the particle sensor
+      used to say "No sensor data yet" there while its readings were arriving.
+      The start-up screen names these sensors too, under the classroom ones.
+      In all four languages. Boxes on the classroom firmware 2.3.0 or 2.2.6 look
+      exactly as before.
+  - A warning when something blocks the particle sensor. The BMV080
+    measures with a laser that leaves through its lens; a lid, a hand or an
+    object less than about 35 cm above it stops the measurement. With the
+    EASE firmware 2.4.4 the application now opens a window saying so, once
+    each time it happens, and closes it by itself when the sensor sees
+    clearly again. The window holds nothing up: the other readings and the
+    rest of the application carry on, and there is no OK to wait for. Before, the PM chart just stopped, with no reason given.
+
+  - What to do when Windows blocks MagicBox outright. On some Windows 11
+    computers Smart App Control stops the application with no "Run anyway"
+    button, because it is not commercially signed. The user manual (step 3 of
+    "Installing and starting", with two marked screenshots), First steps, the
+    technical manual and the download page now show how to switch it off
+    once: Windows Security → App & browser control → Smart App Control
+    settings → Off. The antivirus stays on. In all four languages.
+
 v5.7.0 — 27 September 2026
 --------------------------
 

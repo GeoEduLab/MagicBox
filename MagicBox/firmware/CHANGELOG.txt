@@ -10,6 +10,105 @@ Until 25 September 2026 there was also a USB-only variant, serial_only
 the older entries below still say when a change applied to it. It is no
 longer shipped.
 
+v2.4.4 — 22 October 2026 (EASE summer school, not in the package)
+-----------------------------------------------------------------
+
+In firmware/EASE_ScoalaDeVara_2026-11/serial_wifi_v2_4_4. Flashed on
+BOX_D8CD (particle sensor only) on 22 October 2026; the PM values come
+as before. Not yet tried with the beam blocked.
+
+Added:
+
+  - The box says when the particle sensor's beam is blocked. A lid, a
+    hand or a wall less than about 35 cm above the lens stops the
+    measurement. Until now the PM values simply disappeared, and the
+    application could not tell a blocked sensor from a missing one. The box
+    now sends PM_OBS: 1 instead, and MagicBox 5.8.0 shows a warning.
+
+v2.4.3 — 21 October 2026 (EASE summer school, not in the package)
+-----------------------------------------------------------------
+
+In firmware/EASE_ScoalaDeVara_2026-11/serial_wifi_v2_4_3. Tried on two
+boxes on 21-22 October 2026: BOX_A012 (particle sensor wired with SDA and
+SCL crossed) and BOX_D8CD (particle sensor, then the SGP41 on 1.8 V).
+
+Added:
+
+  - The particle sensor works even with its SDA and SCL wires crossed.
+    When the BMV080 does not answer, the box looks for it with the two lines
+    swapped. If it finds it there it says so in the Serial Monitor
+    ([BMV080] found at 0x57 only with SDA and SCL swapped) and reads it
+    anyway; the other sensors are not affected. Crossing the two wires back
+    is still the better fix.
+
+v2.4.2 — 20 October 2026 (EASE summer school, not in the package)
+-----------------------------------------------------------------
+
+Added:
+
+  - The box can read an SGP41 gas sensor. It sends VOC_IDX and
+    NOX_IDX, Sensirion's indices from 1 to 500: for VOC, 100 is the
+    room's usual air and higher means more vapours (paint, markers,
+    perfume); for NOx, 1 is clean air. The sensor checks itself at start-up
+    and needs about an hour to learn the room. Tried on 22 October 2026 on a
+    1.8 V board through a level shifter: it works, but only with the board's
+    small decoupling capacitor in place.
+
+v2.4.1 — 17 October 2026 (EASE summer school, not in the package)
+-----------------------------------------------------------------
+
+Now in firmware/EASE_ScoalaDeVara_2026-11/serial_wifi_v2_4_1 (replaces
+the 2.4.0 folder). Not yet tried on a box.
+
+Added:
+
+  - **The box can read a BMV080 particulate sensor (DFRobot SEN0663
+    board).** It sends PM1, PM25 and PM10: the mass of fine dust and
+    smoke in the air, in µg/m³, for particles up to 1, 2.5 and 10 µm
+    (the WHO 24-hour guideline for PM2.5 is 15 µg/m³). The readings start
+    15 seconds after power-up. The sensor has no fan: it looks with a
+    laser at the air about 5 mm above its lens, so nothing may cover it.
+    If something stays in front of it (a lid, a wall, a book within about
+    35 cm), the sensor notices and the box leaves the PM readings out
+    rather than send wrong ones; the Serial Monitor says so. A passing
+    hand does no harm.
+  - The sensor works only in rooms above 15 °C.
+  - Installing it needs one extra library, DFRobot_BMV080, added as a ZIP
+    in the Arduino IDE (see the folder's README).
+
+v2.4.0 — 13 October 2026 (EASE summer school, not in the package)
+-----------------------------------------------------------------
+
+A separate firmware for the EASE summer school (November 2026), kept in
+firmware/EASE_ScoalaDeVara_2026-11/serial_wifi_v2_4_0. The boxes in
+schools and the package stay on 2.3.0. The application does not show the
+new readings yet.
+
+Added:
+
+  - The box can read an Adafruit STEMMA soil moisture sensor. Plug it
+    into a free socket and the box finds it at start-up (it says
+    [SOIL] OK at 0x36 in the Serial Monitor) and sends two readings every
+    second: SOIL, how wet the soil is, as a raw number (about 200 in dry
+    air, up to about 2000 in wet soil; each sensor has to be checked once in
+    dry and in wet soil before readings from two sensors can be compared),
+    and SOIL_T, the temperature of the sensor's chip (±2 °C; it follows
+    the soil only slowly and is not a soil thermometer).
+  - The box can read an SGP30 air-quality sensor (GY-SGP30 board). It
+    sends TVOC, the volatile organic compounds in the air (ppb: paint,
+    markers, perfume, breath), and ECO2, a CO₂ estimate the sensor
+    works out from the same gases. ECO2 is not a CO₂ measurement: where
+    the box also has the SCD41, trust the SCD41 for CO₂. Both readings
+    start 15 seconds after power-up, while the sensor warms up. The box
+    corrects them for air humidity with its BME280.
+  - The SGP30 needs about 12 hours of running to learn its reference
+    level; the box saves it and reuses it after power-off. For a new
+    sensor, or a box left unpowered for more than a week, type
+    SGP_BASELINE CLEAR in the Serial Monitor and restart the box.
+  - A box without the soil sensor or the SGP30 works exactly as on 2.3.0.
+    If one of them is pulled out while the box runs, the box stops asking
+    it after 10 seconds; plug it back and restart the box.
+
 v2.3.0 — 26 September 2026
 --------------------------
 
