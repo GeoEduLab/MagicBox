@@ -4,6 +4,15 @@
  * Sensors : VEML7700 (light) · BME280 (T/H/P) · MPU-6500 (IMU)
  *           SCD41 (CO₂ + T/H), read every 5 s (its hardware cycle); the
  *           last values are repeated in every 1 Hz packet
+ *           Adafruit STEMMA Soil Sensor (seesaw, I2C 0x36-0x39), optional:
+ *           capacitive moisture + chip temperature at 1 Hz
+ *           SGP30 (GY-SGP30 board, I2C 0x58), optional: TVOC + eCO₂ at 1 Hz,
+ *           humidity-compensated from the BME280 (or SCD41)
+ *           SGP41 (I2C 0x59), optional: Sensirion VOC Index and NOx Index
+ *           at 1 Hz, humidity-compensated from the BME280 (or SCD41)
+ *           BMV080 (DFRobot SEN0663 board, I2C 0x54-0x57), optional:
+ *           PM1 / PM2.5 / PM10 at ~1 Hz, fanless laser particle counter;
+ *           also found with its SDA and SCL wires crossed (2.4.3)
  * Wiring  : SDA=GPIO21  SCL=GPIO22  VCC=3.3V  GND=GND
  * Baud    : 115200
  *
@@ -30,8 +39,8 @@
  * Boot output (once, on both transports):
  *   DEVICE: BOX_XXXX
  *   TYPE: MULTI
- *   SENSORS: LUX,WHITE,RAW,T,H,P,ALT,AX,AY,AZ,GX,GY,GZ,CO2,TEMP_SCD,HUM_SCD
- *   FW: 2.3.0
+ *   SENSORS: LUX,WHITE,RAW,T,H,P,ALT,AX,AY,AZ,GX,GY,GZ,CO2,TEMP_SCD,HUM_SCD,SOIL,SOIL_T,TVOC,ECO2,VOC_IDX,NOX_IDX,PM1,PM25,PM10
+ *   FW: 2.4.2
  *   IMU_MOUNT: FLIPPED            (or NORMAL, see below)
  *
  * Commands (one line, over USB or the WiFi link; the Arduino Serial
@@ -42,11 +51,31 @@
  *                       the corrected PCB): readings are turned over, the
  *                       default
  *   INFO                print the header lines again
+ *   SGP_BASELINE CLEAR  forget the SGP30 baseline kept in the box (after
+ *                       a week or more unpowered, or a new sensor)
  * The mounting is kept in the box (NVS namespace "magicbox_hw"), survives
  * power-off and reflashing, and is NOT erased by the BOOT-button WiFi reset.
  *
  * Loop output:
  *    1 Hz  {"id":"BOX_XXXX","ts_ms":N,"data":{"lux":...,"T":...,...}}
+ *          Soil sensor, when fitted: "SOIL" = raw capacitance (about 200
+ *          in dry air, up to ~2000 in wet soil or water; no unit, each
+ *          sensor needs its own dry/wet calibration), "SOIL_T" = °C of the
+ *          sensor's chip (±2 °C, not a soil thermometer).
+ *          SGP30, when fitted: "TVOC" (ppb) and "ECO2" (ppm, an estimate
+ *          from the same gas signal, NOT a CO₂ measurement), left out for
+ *          the first 15 s after power-up, while the sensor warms up.
+ *          SGP41, when fitted: "VOC_IDX" and "NOX_IDX", Sensirion's gas
+ *          indices (1-500, no unit). VOC 100 = the average of the last
+ *          ~24 h in that room, higher = more VOCs than usual; NOx 1 =
+ *          clean, higher = NO2/NO present (gas stove, traffic). Both are
+ *          left out for the first ~55 s (10 s conditioning + the
+ *          algorithm's 45 s start-up).
+ *          BMV080, when fitted: "PM1", "PM25", "PM10" (µg/m³, 1 µg/m³
+ *          steps), left out for the first 15 s, and whenever the sensor
+ *          reports something static in front of its laser (a lid, a
+ *          wall or a hand within ~35 cm above the lens); then
+ *          "PM_OBS": 1 is sent instead (2.4.4), and nothing when clear.
  *   50 Hz  {"id":"BOX_XXXX","ts_ms":N,"imu_hz":50,"imu":[[ax,ay,az,gx,gy,gz]]}
  *
  * TCP connect is non-blocking (the loop keeps streaming while the
@@ -60,7 +89,12 @@
  *
  * Libraries (Arduino Library Manager):
  *   Adafruit VEML7700 · Adafruit BME280 · Adafruit Unified Sensor · ArduinoJson
- *   SparkFun SCD4x Arduino Library
+ *   SparkFun SCD4x Arduino Library · Adafruit seesaw Library
+ *   Adafruit SGP30 Sensor · Sensirion Gas Index Algorithm (SGP41 indices;
+ *   the SGP41 itself is driven with plain Wire calls)
+ *   DFRobot_BMV080 (not in the Library Manager: ZIP from
+ *   github.com/DFRobot/DFRobot_BMV080, Sketch > Include Library > Add .ZIP;
+ *   it carries Bosch's precompiled driver for the ESP32)
  *   (WiFi, WebServer, DNSServer, Preferences come with the ESP32 core)
  */
 
@@ -75,6 +109,12 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 #include <SparkFun_SCD4x_Arduino_Library.h>
+#include <Adafruit_seesaw.h>
+#include <Adafruit_SGP30.h>
+#include <DFRobot_BMV080.h>
+#undef ERR_OK   // DFRobot's macro breaks lwip's err_enum_t (ERR_OK = 0)
+#include <VOCGasIndexAlgorithm.h>
+#include <NOxGasIndexAlgorithm.h>
 #include <lwip/sockets.h>   // non-blocking TCP connect (socket/fcntl/select)
 #include <esp_netif.h>      // DHCP option 114: captive-portal address
 
@@ -112,7 +152,35 @@
 //        header line), so boards with the sensor the right way up need no
 //        tick in the app. Default FLIPPED = same readings as 2.2.6.
 //        INFO command reprints the header lines.
-#define FW_VERSION "2.3.0"
+// 2.4.0  Optional Adafruit STEMMA Soil Sensor (seesaw, first found of
+//        0x36-0x39): SOIL (raw capacitance) + SOIL_T (chip °C) at 1 Hz.
+//        Optional SGP30 (0x58): TVOC (ppb) + eCO2 (ppm) at 1 Hz, after a
+//        15 s warm-up; absolute humidity from BME280/SCD41 every 60 s;
+//        baseline saved in NVS after 12 h of running, then hourly, and
+//        restored at boot (SGP_BASELINE CLEAR forgets it).
+//        Absent = ignored; everything else unchanged.
+// 2.4.1  Optional BMV080 particulate sensor (DFRobot SEN0663, first found
+//        of 0x57-0x54): PM1, PM25, PM10 in µg/m³ at ~1 Hz, continuous
+//        mode, "balanced" algorithm, obstruction detection on (values
+//        left out while obstructed), first 15 s left out.
+// 2.4.2  Optional SGP41 (0x59): VOC_IDX + NOX_IDX (Sensirion Gas Index
+//        Algorithm) at 1 Hz; self-test at boot, 10 s NOx conditioning,
+//        T/RH compensation from BME280/SCD41 every second. Plain Wire
+//        calls, the command sent one tick and read the next, so the
+//        50 ms measurement never waits in the loop.
+// 2.4.3  BMV080 wired with SDA and SCL crossed: when it does not answer
+//        on the normal lines the box looks for it on the crossed ones,
+//        says so on Serial and turns the bus round around each driver
+//        call (9 clocks + STOP on the way back for the other sensors).
+// 2.4.4  While the BMV080 reports something static in front of its
+//        laser, the packet carries "PM_OBS":1 in place of the PM values,
+//        so the application can tell the teacher instead of showing a
+//        sensor that has silently stopped.
+// 2.5.0  2.4.4 becomes the classroom firmware: the optional sensors of
+//        the EASE summer school (soil probe, SGP30, SGP41, BMV080) are now
+//        part of the one MagicBox firmware. Nothing else changed; a box
+//        without them sends exactly what 2.3.0 sent.
+#define FW_VERSION "2.5.0"
 
 // ── Provisioning ────────────────────────────────────────────────
 #define AP_PREFIX        "MagicBox-"      // AP SSID = prefix + last 4 of device ID
@@ -134,6 +202,10 @@
 #define HAS_BME280    1
 #define HAS_MPU6500   1
 #define HAS_SCD41     1   // detected at boot; absent from I2C = ignored
+#define HAS_SOIL      1   // Adafruit STEMMA Soil Sensor; absent = ignored
+#define HAS_SGP30     1   // SGP30 TVOC/eCO2 (GY-SGP30); absent = ignored
+#define HAS_SGP41     1   // SGP41 VOC/NOx index; absent = ignored
+#define HAS_BMV080    1   // BMV080 PM1/PM2.5/PM10 (DFRobot SEN0663); absent = ignored
 
 // ── MPU-6500 registers (direct I2C — no library needed) ─────────
 #define MPU_ADDR      0x68
@@ -191,6 +263,73 @@ char DEVICE_ID[12];
   static struct { uint16_t co2; float T, H; bool ok; } c_scd = {0, 0, 0, false};
 #endif
 
+#if HAS_SOIL
+  // Address 0x36 by default; the A0/A1 jumpers move it up to 0x39.
+  // (0x36 is also a MAX17048 fuel gauge: the seesaw HW-ID check in
+  // begin() tells them apart.)
+  static const uint8_t SOIL_ADDRS[] = {0x36, 0x37, 0x38, 0x39};
+  Adafruit_seesaw soil;
+  bool    soil_ok   = false;
+  uint8_t soil_addr = 0;
+#endif
+
+#if HAS_SGP30
+  // Sensirion: IAQ_measure exactly once a second, or the on-chip baseline
+  // algorithm drifts; the first ~15 s read a fixed 400 ppm / 0 ppb.
+  // A baseline is valid once the sensor has run 12 h, and for 7 days
+  // without power; the box has no clock to tell its age, hence the
+  // SGP_BASELINE CLEAR command.
+  #define SGP_WARMUP_MS     15000UL
+  #define SGP_HUM_MS        60000UL           // humidity compensation refresh
+  #define SGP_BASE_FIRST_MS (12UL * 3600000UL)
+  #define SGP_BASE_EVERY_MS ( 1UL * 3600000UL)
+  #define HW_KEY_SGP_ECO2   "sgp_eco2"        // in HW_NAMESPACE, 0 = none
+  #define HW_KEY_SGP_TVOC   "sgp_tvoc"
+  Adafruit_SGP30 sgp;
+  bool sgp_ok = false;
+  static unsigned long t_sgp_start = 0, t_sgp_hum = 0, t_sgp_base = 0;
+  static uint8_t sgp_fail = 0;
+#endif
+
+#if HAS_SGP41
+  // Sensirion SGP41: the gas index algorithm wants one raw sample per
+  // second. Each 1 Hz tick reads the result of the command sent on the
+  // previous tick (ready after 50 ms) and sends the next one, so nothing
+  // waits. The first 10 commands are "conditioning" (NOx pixel, at most
+  // 10 s or the sensor ages faster), then "measure raw".
+  #define SGP41_ADDR        0x59
+  #define SGP41_CMD_COND    0x2612
+  #define SGP41_CMD_MEAS    0x2619
+  #define SGP41_CMD_TEST    0x280E
+  #define SGP41_CMD_SERIAL  0x3682
+  #define SGP41_COND_S      10
+  VOCGasIndexAlgorithm voc_algo;
+  NOxGasIndexAlgorithm nox_algo;
+  bool sgp41_ok = false;
+  static uint8_t  sgp41_cond    = SGP41_COND_S;   // conditioning ticks left
+  static uint8_t  sgp41_pending = 0;              // 0 none, 1 cond, 2 meas
+  static uint8_t  sgp41_fail    = 0;
+#endif
+
+#if HAS_BMV080
+  // Bosch's driver runs inside bmv080_serve_interrupt() on the loop task
+  // and needs a large stack (DFRobot examples: 60 KB; the default 8 KB
+  // crashes). It must be served often; it delivers a result about once a
+  // second. CSB/MISO pick the address: both high (DFRobot default) 0x57.
+  // The stack size is set below LineIn: the macro defines a function.
+  static const uint8_t BMV_ADDRS[] = {0x57, 0x56, 0x55, 0x54};
+  #define BMV_SERVE_MS     200UL
+  #define BMV_WARMUP_MS  15000UL   // datasheet: 1.9 s start-up + 10 s settling
+  #define BMV_STALE_MS    3000UL   // a value older than this is not sent
+  #define BMV_DEAD_MS    30000UL   // no result this long = sensor gone
+  DFRobot_BMV080_I2C* bmv = nullptr;
+  bool    bmv_ok   = false;
+  uint8_t bmv_addr = 0;
+  bool    bmv_swapped = false;   // its SDA on GPIO22, SCL on GPIO21
+  static unsigned long t_bmv_start = 0, t_bmv_serve = 0, t_bmv_data = 0;
+  static struct { float pm1, pm25, pm10; bool obstructed; } c_bmv = {0, 0, 0, false};
+#endif
+
 // ── Timers ──────────────────────────────────────────────────────
 static unsigned long t_slow = 0;
 static unsigned long t_imu  = 0;
@@ -209,6 +348,11 @@ enum FailKind { F_NONE, F_NOT_FOUND, F_PASSWORD, F_OTHER };
 // One command line being collected per source (USB serial, TCP); declared
 // here for the same reason.
 struct LineIn { String buf; unsigned long t_last; };
+#if HAS_BMV080
+  // Defines getArduinoLoopTaskStackSize(), so it must come after the
+  // types above or the builder's prototypes land before them.
+  SET_LOOP_TASK_STACK_SIZE(60 * 1024);
+#endif
 
 Preferences prefs;
 WiFiUDP     udp;
@@ -385,20 +529,42 @@ static void vemlService(unsigned long now) {
 // Wire.end() alone doesn't release a bus where a device (SCD41 mid-
 // measurement, brownout) is clock-stretching indefinitely. Clock SCL
 // manually until SDA goes high, then generate a STOP condition.
-static void i2cBusUnstick() {
-  pinMode(21, INPUT_PULLUP);   // SDA: listen with pull-up
-  pinMode(22, OUTPUT);          // SCL: we drive it
+static void i2cBusUnstickPins(uint8_t sda, uint8_t scl) {
+  pinMode(sda, INPUT_PULLUP);   // SDA: listen with pull-up
+  pinMode(scl, OUTPUT);          // SCL: we drive it
   for (int i = 0; i < 9; i++) {
-    digitalWrite(22, HIGH); delayMicroseconds(5);
-    digitalWrite(22, LOW);  delayMicroseconds(5);
-    if (digitalRead(21)) break;   // SDA released — bus is free
+    digitalWrite(scl, HIGH); delayMicroseconds(5);
+    digitalWrite(scl, LOW);  delayMicroseconds(5);
+    if (digitalRead(sda)) break;   // SDA released — bus is free
   }
   // STOP condition: SDA low→high while SCL is high
-  pinMode(21, OUTPUT);
-  digitalWrite(21, LOW);  delayMicroseconds(5);
-  digitalWrite(22, HIGH); delayMicroseconds(5);
-  digitalWrite(21, HIGH); delayMicroseconds(5);
+  pinMode(sda, OUTPUT);
+  digitalWrite(sda, LOW);  delayMicroseconds(5);
+  digitalWrite(scl, HIGH); delayMicroseconds(5);
+  digitalWrite(sda, HIGH); delayMicroseconds(5);
 }
+static void i2cBusUnstick() { i2cBusUnstickPins(21, 22); }
+
+#if HAS_BMV080
+// ── BMV080 wired with SDA and SCL crossed ───────────────────────
+// The bus is turned round for the BMV080 (SDA on GPIO22) and back. The
+// other sensors see that traffic on crossed lines; the STOP sent on the
+// way back clears anything they may have taken for a start.
+static void bmvBus(bool crossed) {
+  Wire.end();
+  if (crossed) { i2cBusUnstickPins(22, 21); Wire.begin(22, 21); }
+  else         { i2cBusUnstickPins(21, 22); Wire.begin(21, 22); }
+  Wire.setClock(100000);
+}
+
+static uint8_t bmvProbe() {
+  for (uint8_t a : BMV_ADDRS) {
+    Wire.beginTransmission(a);
+    if (Wire.endTransmission() == 0) return a;
+  }
+  return 0;
+}
+#endif
 
 // ── MPU-6500: bus + sensor recovery ─────────────────────────────
 // Unstick the bus first (9-clock), then hard-reset Wire and re-init.
@@ -435,6 +601,53 @@ static bool mpuRead(float out[6]) {
   return true;
 }
 
+#if HAS_SGP41
+// ── SGP41: plain Wire, Sensirion framing (word + CRC-8) ─────────
+static uint8_t sgp41Crc(uint16_t w) {
+  uint8_t crc = 0xFF;                       // poly 0x31, init 0xFF
+  uint8_t b[2] = { (uint8_t)(w >> 8), (uint8_t)w };
+  for (uint8_t i = 0; i < 2; i++) {
+    crc ^= b[i];
+    for (uint8_t k = 0; k < 8; k++)
+      crc = (crc & 0x80) ? (uint8_t)((crc << 1) ^ 0x31) : (uint8_t)(crc << 1);
+  }
+  return crc;
+}
+
+// Command with optional argument words (each sent with its CRC).
+static bool sgp41Send(uint16_t cmd, const uint16_t* args, uint8_t n) {
+  Wire.beginTransmission(SGP41_ADDR);
+  Wire.write((uint8_t)(cmd >> 8)); Wire.write((uint8_t)cmd);
+  for (uint8_t i = 0; i < n; i++) {
+    Wire.write((uint8_t)(args[i] >> 8)); Wire.write((uint8_t)args[i]);
+    Wire.write(sgp41Crc(args[i]));
+  }
+  return Wire.endTransmission() == 0;
+}
+
+// Read n words; false on a short read or a CRC mismatch.
+static bool sgp41Read(uint16_t* out, uint8_t n) {
+  uint8_t len = n * 3;
+  if (Wire.requestFrom((uint8_t)SGP41_ADDR, len, (uint8_t)true) != len) return false;
+  for (uint8_t i = 0; i < n; i++) {
+    uint8_t hi = Wire.read(), lo = Wire.read(), c = Wire.read();
+    out[i] = (uint16_t)(hi << 8 | lo);
+    if (sgp41Crc(out[i]) != c) return false;
+  }
+  return true;
+}
+
+// T/RH in the sensor's ticks; 50 %RH / 25 °C (no compensation) when
+// neither the BME280 nor the SCD41 gives a reading.
+static void sgp41Comp(float t, float h, uint16_t comp[2]) {
+  if (isnan(t) || isnan(h)) { comp[0] = 0x8000; comp[1] = 0x6666; return; }
+  h = constrain(h, 0.0f, 100.0f);
+  t = constrain(t, -45.0f, 130.0f);
+  comp[0] = (uint16_t)lroundf(h * 65535.0f / 100.0f);
+  comp[1] = (uint16_t)lroundf((t + 45.0f) * 65535.0f / 175.0f);
+}
+#endif
+
 // ── Commands (USB serial and the WiFi link) ─────────────────────
 static void sendHeadersAll() {
   sendHeadersTo(Serial);
@@ -457,6 +670,15 @@ static void handleCommand(String cmd) {
     sendLine(String("IMU_MOUNT: ") + (imu_flipped ? "FLIPPED" : "NORMAL"));
   } else if (cmd == "INFO") {
     sendHeadersAll();
+  #if HAS_SGP30
+  } else if (cmd == "SGP_BASELINE CLEAR") {
+    Preferences hw;
+    hw.begin(HW_NAMESPACE, false);
+    hw.remove(HW_KEY_SGP_ECO2);
+    hw.remove(HW_KEY_SGP_TVOC);
+    hw.end();
+    Serial.println("[SGP30] Baseline forgotten; restart the box to apply");
+  #endif
   } else {
     Serial.print("[CMD] Unknown command: ");
     Serial.println(cmd);
@@ -978,6 +1200,109 @@ void setup() {
     Serial.printf("[SCD41] %s\n", scd41_ok ? "OK" : "FAIL");
   #endif
 
+  #if HAS_SOIL
+    // A quick address probe first: seesaw.begin() spends ~100 ms on
+    // every address that does not answer.
+    for (uint8_t a : SOIL_ADDRS) {
+      Wire.beginTransmission(a);
+      if (Wire.endTransmission() != 0) continue;
+      if (soil.begin(a)) { soil_ok = true; soil_addr = a; break; }
+    }
+    if (soil_ok) {
+      if (SENSOR_LIST.length()) SENSOR_LIST += ",";
+      SENSOR_LIST += "SOIL,SOIL_T";
+      Serial.printf("[SOIL] OK at 0x%02X\n", soil_addr);
+    } else {
+      Serial.println("[SOIL] not fitted");
+    }
+  #endif
+
+  #if HAS_SGP30
+    sgp_ok = sgp.begin(&Wire);       // also starts IAQ (IAQ_init)
+    if (sgp_ok) {
+      t_sgp_start = millis();
+      Preferences hw;
+      hw.begin(HW_NAMESPACE, true);
+      uint16_t be = hw.getUShort(HW_KEY_SGP_ECO2, 0);
+      uint16_t bt = hw.getUShort(HW_KEY_SGP_TVOC, 0);
+      hw.end();
+      if (be && bt && sgp.setIAQBaseline(be, bt))
+        Serial.printf("[SGP30] OK, baseline restored (0x%04X 0x%04X)\n", be, bt);
+      else
+        Serial.println("[SGP30] OK, no baseline yet (12 h to learn one)");
+      if (SENSOR_LIST.length()) SENSOR_LIST += ",";
+      SENSOR_LIST += "TVOC,ECO2";
+    } else {
+      Serial.println("[SGP30] not fitted");
+    }
+  #endif
+
+  #if HAS_SGP41
+    {
+      uint16_t sn[3], tr = 0;
+      bool found = sgp41Send(SGP41_CMD_SERIAL, nullptr, 0);
+      if (found) { delay(2); found = sgp41Read(sn, 3); }
+      if (found) {
+        // Self-test checks the hotplate and both MOX pixels (320 ms).
+        bool test = sgp41Send(SGP41_CMD_TEST, nullptr, 0);
+        if (test) { delay(330); test = sgp41Read(&tr, 1); }
+        if (test && (tr & 0x0F) == 0) {
+          sgp41_ok = true;
+          if (SENSOR_LIST.length()) SENSOR_LIST += ",";
+          SENSOR_LIST += "VOC_IDX,NOX_IDX";
+          Serial.printf("[SGP41] OK, serial %04X%04X%04X, self-test passed\n",
+                        sn[0], sn[1], sn[2]);
+        } else {
+          Serial.printf("[SGP41] self-test FAILED (%s0x%02X): SGP41 off\n",
+                        test ? "" : "no answer, ", test ? (tr & 0x0F) : 0);
+        }
+      } else {
+        Serial.println("[SGP41] not fitted");
+      }
+    }
+  #endif
+
+  #if HAS_BMV080
+    // Probe first: the library's begin() would call Wire.begin() again.
+    bmv_addr = bmvProbe();
+    if (!bmv_addr) {                  // a crossed cable answers only this way
+      bmvBus(true);
+      bmv_addr = bmvProbe();
+      bmv_swapped = bmv_addr != 0;
+      if (!bmv_swapped) bmvBus(false);
+    }
+    if (bmv_addr) {
+      bmv = new DFRobot_BMV080_I2C(&Wire, bmv_addr);
+      uint16_t st = bmv->openBmv080();
+      if (st == 0) {
+        bmv->setObstructionDetection(true);
+        bmv->setDoVibrationFiltering(true);       // boxes get picked up
+        bmv->setMeasurementAlgorithm(BALANCED);   // between fast and precise
+        int ms = bmv->setBmv080Mode(CONTINUOUS_MODE);
+        bmv_ok = (ms == 0);
+        if (!bmv_ok) Serial.printf("[BMV080] start failed (%d)\n", ms);
+      } else {
+        Serial.printf("[BMV080] open failed at 0x%02X (status %u)\n", bmv_addr, st);
+      }
+    }
+    char sid[13] = "";
+    if (bmv_ok) bmv->getBmv080ID(sid);
+    if (bmv_swapped) {
+      bmvBus(false);
+      Serial.printf("[BMV080] found at 0x%02X only with SDA and SCL swapped: "
+                    "it works, but cross the two wires back when you can\n",
+                    bmv_addr);
+    }
+    if (bmv_ok) {
+      t_bmv_start = t_bmv_data = millis();
+      if (SENSOR_LIST.length()) SENSOR_LIST += ",";
+      SENSOR_LIST += "PM1,PM25,PM10";
+      Serial.printf("[BMV080] OK at 0x%02X, id %s\n", bmv_addr, sid);
+    } else if (!bmv_addr) {
+      Serial.println("[BMV080] not fitted");
+    }
+  #endif
+
   #if HAS_VEML7700
     // Give auto-range a moment so the very first packet already carries
     // light (≤ 1.5 s, boot only — in normal light it settles in ~0.3 s).
@@ -1058,6 +1383,37 @@ void loop() {
   }
   #endif
 
+  // ── BMV080: serve the driver every 200 ms, keep the last result ─
+  #if HAS_BMV080
+  if (bmv_ok && now - t_bmv_serve >= BMV_SERVE_MS) {
+    t_bmv_serve = now;
+    float p1, p25, p10;
+    unsigned long t0 = millis();
+    if (bmv_swapped) bmvBus(true);
+    bool got = bmv->getBmv080Data(&p1, &p25, &p10);
+    bool obs = got && bmv->ifObstructed();
+    if (bmv_swapped) bmvBus(false);
+    unsigned long took = millis() - t0;
+    // The driver reads its FIFO here; a long call delays the 50 Hz IMU.
+    // Reported once per new maximum, so the first bench run shows it.
+    static unsigned long bmv_took_max = 20;
+    if (took > bmv_took_max) {
+      bmv_took_max = took;
+      Serial.printf("[BMV080] driver call took %lu ms\n", took);
+    }
+    if (got) {
+      t_bmv_data = now;
+      if (obs != c_bmv.obstructed)
+        Serial.println(obs ? "[BMV080] something static in front of the laser: PM left out"
+                           : "[BMV080] view clear again");
+      c_bmv = { p1, p25, p10, obs };
+    } else if (now - t_bmv_data >= BMV_DEAD_MS) {
+      bmv_ok = false;
+      Serial.println("[BMV080] no result for 30 s: PM sensor off");
+    }
+  }
+  #endif
+
   // ── SCD41 @ 0.2 Hz (5 s hardware cycle) ───────────────────────
   #if HAS_SCD41
   if (scd41_ok && now - t_scd >= SCD_MS) {
@@ -1074,7 +1430,7 @@ void loop() {
   // ── Slow sensors @ 1 Hz ───────────────────────────────────────
   if (now - t_slow >= SLOW_MS) {
     t_slow = now;
-    StaticJsonDocument<384> doc;
+    StaticJsonDocument<512> doc;
     doc["id"]    = DEVICE_ID;
     doc["ts_ms"] = now;
     JsonObject d = doc.createNestedObject("data");
@@ -1105,6 +1461,135 @@ void loop() {
         d["H"]   = round(min(h, 100.0f) * 100) / 100.0f;
         d["P"]   = round(p * 100) / 100.0f;
         d["ALT"] = round(bme.readAltitude(1013.25f) * 10) / 10.0f;
+      }
+    }
+    #endif
+
+    #if HAS_SOIL
+    if (soil_ok) {
+      // touchRead ~3-5 ms, getTemp ~1 ms: fine inside the 20 ms IMU slot.
+      // 65535 = no answer (after ~25 ms of retries); getTemp has no error
+      // return, hence the range check. A failed read leaves the keys out
+      // of this packet; 10 in a row (sensor unplugged) switch the soil
+      // sensor off until the next reset, so the retries stop costing
+      // IMU time.
+      static uint8_t soil_fail = 0;
+      uint16_t c = soil.touchRead(0);
+      if (c != 65535 && c < 4096) {
+        soil_fail = 0;
+        d["SOIL"] = c;
+        float st = soil.getTemp();
+        if (st > -40 && st < 85) d["SOIL_T"] = round(st * 10) / 10.0f;
+      } else if (++soil_fail >= 10) {
+        soil_ok = false;
+        Serial.println("[SOIL] no answer 10 s in a row: soil sensor off");
+      }
+    }
+    #endif
+
+    #if HAS_SGP30
+    if (sgp_ok) {
+      // Absolute humidity (mg/m³) from the BME280, else the SCD41; the
+      // set command costs 10 ms, so once a minute is plenty.
+      if (now - t_sgp_hum >= SGP_HUM_MS || t_sgp_hum == 0) {
+        float ht = NAN, hh = NAN;
+        #if HAS_BME280
+        if (d["T"].is<float>() && d["H"].is<float>()) { ht = d["T"]; hh = d["H"]; }
+        #endif
+        #if HAS_SCD41
+        if (isnan(ht) && c_scd.ok) { ht = c_scd.T; hh = c_scd.H; }
+        #endif
+        if (!isnan(ht)) {
+          float ah = 216.7f * (hh / 100.0f * 6.112f *
+                     expf(17.62f * ht / (243.12f + ht)) / (273.15f + ht));
+          sgp.setHumidity((uint32_t)(ah * 1000.0f));
+          t_sgp_hum = now;
+        }
+      }
+      // IAQ_measure takes 12 ms. A failed read leaves the keys out; 10 in
+      // a row (sensor unplugged) switch it off until the next reset.
+      if (sgp.IAQmeasure()) {
+        sgp_fail = 0;
+        if (now - t_sgp_start >= SGP_WARMUP_MS) {
+          d["TVOC"] = sgp.TVOC;
+          d["ECO2"] = sgp.eCO2;
+        }
+        unsigned long run = now - t_sgp_start;
+        if (run >= SGP_BASE_FIRST_MS &&
+            (t_sgp_base == 0 || now - t_sgp_base >= SGP_BASE_EVERY_MS)) {
+          uint16_t be, bt;
+          if (sgp.getIAQBaseline(&be, &bt)) {
+            Preferences hw;
+            hw.begin(HW_NAMESPACE, false);
+            hw.putUShort(HW_KEY_SGP_ECO2, be);
+            hw.putUShort(HW_KEY_SGP_TVOC, bt);
+            hw.end();
+            Serial.printf("[SGP30] Baseline saved (0x%04X 0x%04X)\n", be, bt);
+          }
+          t_sgp_base = now;
+        }
+      } else if (++sgp_fail >= 10) {
+        sgp_ok = false;
+        Serial.println("[SGP30] no answer 10 s in a row: SGP30 off");
+      }
+    }
+    #endif
+
+    #if HAS_SGP41
+    if (sgp41_ok) {
+      // Result of last second's command first (~2 ms on the bus), then
+      // the next command. An index of 0 = the algorithm is still in its
+      // 45 s start-up: the key is left out.
+      if (sgp41_pending) {
+        uint16_t raw[2];
+        if (sgp41Read(raw, sgp41_pending == 2 ? 2 : 1)) {
+          sgp41_fail = 0;
+          int32_t vi = voc_algo.process(raw[0]);
+          if (sgp41_pending == 2) {
+            int32_t ni = nox_algo.process(raw[1]);
+            if (vi > 0) d["VOC_IDX"] = vi;
+            if (ni > 0) d["NOX_IDX"] = ni;
+          }
+        } else if (++sgp41_fail >= 10) {
+          sgp41_ok = false;
+          Serial.println("[SGP41] no answer 10 s in a row: SGP41 off");
+        }
+      }
+      if (sgp41_ok) {
+        float ht = NAN, hh = NAN;
+        #if HAS_BME280
+        if (d["T"].is<float>() && d["H"].is<float>()) { ht = d["T"]; hh = d["H"]; }
+        #endif
+        #if HAS_SCD41
+        if (isnan(ht) && c_scd.ok) { ht = c_scd.T; hh = c_scd.H; }
+        #endif
+        uint16_t comp[2];
+        sgp41Comp(ht, hh, comp);
+        bool cond = sgp41_cond > 0;
+        if (sgp41Send(cond ? SGP41_CMD_COND : SGP41_CMD_MEAS, comp, 2)) {
+          sgp41_pending = cond ? 1 : 2;
+          if (cond && --sgp41_cond == 0)
+            Serial.println("[SGP41] conditioning done, measuring VOC + NOx");
+        } else {
+          sgp41_pending = 0;
+          if (++sgp41_fail >= 10) {
+            sgp41_ok = false;
+            Serial.println("[SGP41] no answer 10 s in a row: SGP41 off");
+          }
+        }
+      }
+    }
+    #endif
+
+    #if HAS_BMV080
+    if (bmv_ok && now - t_bmv_start >= BMV_WARMUP_MS &&
+        now - t_bmv_data <= BMV_STALE_MS) {
+      if (c_bmv.obstructed) {
+        d["PM_OBS"] = 1;            // beam blocked: the app warns the teacher
+      } else {
+        d["PM1"]  = (int)lroundf(c_bmv.pm1);
+        d["PM25"] = (int)lroundf(c_bmv.pm25);
+        d["PM10"] = (int)lroundf(c_bmv.pm10);
       }
     }
     #endif

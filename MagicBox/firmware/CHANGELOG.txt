@@ -1,8 +1,8 @@
 ﻿FIRMWARE CHANGELOG
 ==================
 
-Firmware for the ESP32 box: serial_wifi_v2_3_0, which drives all four
-sensors and talks to the application over both USB and WiFi. Newest version
+Firmware for the ESP32 box: serial_wifi_v2_5_0, which drives all four
+sensors, the optional soil, gas and particle sensors, and talks to the application over both USB and WiFi. Newest version
 first.
 
 Until 25 September 2026 there was also a USB-only variant, serial_only
@@ -10,10 +10,36 @@ Until 25 September 2026 there was also a USB-only variant, serial_only
 the older entries below still say when a change applied to it. It is no
 longer shipped.
 
-v2.4.4 — 22 October 2026 (EASE summer school, not in the package)
------------------------------------------------------------------
+v2.5.0 — 7 November 2026
+------------------------
 
-In firmware/EASE_ScoalaDeVara_2026-11/serial_wifi_v2_4_4. Flashed on
+The test firmware for the newer sensors (2.4.x) becomes the one
+MagicBox firmware. Written on BOX_CC9B, BOX_8884 and BOX_2CD1 on 7 November
+2026 (every sensor plugged in was found, sensor mounting kept).
+
+Added:
+
+  - The box also reads the newer sensors, when they are plugged in:
+    the soil probe (moisture and temperature), the SGP30 and SGP41 gas
+    sensors (VOC, and the NOx index for the SGP41) and the BMV080 particle
+    sensor (PM1, PM2.5, PM10). Each is optional: a box without them works
+    and sends exactly what it sent with 2.3.0, so there is no need to
+    reflash the boxes already in schools.
+  - Everything listed under 2.4.0 to 2.4.4 below, which until now was only
+    a test version: the particle sensor also works with SDA and SCL
+    crossed, and the box says when its beam is blocked.
+
+Note:
+
+  - With the particle sensor and the motion sensor in the same box, reading
+    the particle sensor takes 0.1-0.2 s and leaves small gaps in the motion
+    record. Use the particle sensor in a box of its own, or without the
+    motion activities.
+
+v2.4.4 — 22 October 2026 (test version, not in the package)
+-----------------------------------------------------------
+
+In serial_wifi_v2_4_4. Flashed on
 BOX_D8CD (particle sensor only) on 22 October 2026; the PM values come
 as before. Not yet tried with the beam blocked.
 
@@ -25,10 +51,10 @@ Added:
     application could not tell a blocked sensor from a missing one. The box
     now sends PM_OBS: 1 instead, and MagicBox 5.8.0 shows a warning.
 
-v2.4.3 — 21 October 2026 (EASE summer school, not in the package)
------------------------------------------------------------------
+v2.4.3 — 21 October 2026 (test version, not in the package)
+-----------------------------------------------------------
 
-In firmware/EASE_ScoalaDeVara_2026-11/serial_wifi_v2_4_3. Tried on two
+In serial_wifi_v2_4_3. Tried on two
 boxes on 21-22 October 2026: BOX_A012 (particle sensor wired with SDA and
 SCL crossed) and BOX_D8CD (particle sensor, then the SGP41 on 1.8 V).
 
@@ -41,8 +67,8 @@ Added:
     anyway; the other sensors are not affected. Crossing the two wires back
     is still the better fix.
 
-v2.4.2 — 20 October 2026 (EASE summer school, not in the package)
------------------------------------------------------------------
+v2.4.2 — 20 October 2026 (test version, not in the package)
+-----------------------------------------------------------
 
 Added:
 
@@ -54,10 +80,10 @@ Added:
     1.8 V board through a level shifter: it works, but only with the board's
     small decoupling capacitor in place.
 
-v2.4.1 — 17 October 2026 (EASE summer school, not in the package)
------------------------------------------------------------------
+v2.4.1 — 17 October 2026 (test version, not in the package)
+-----------------------------------------------------------
 
-Now in firmware/EASE_ScoalaDeVara_2026-11/serial_wifi_v2_4_1 (replaces
+Now in serial_wifi_v2_4_1 (replaces
 the 2.4.0 folder). Not yet tried on a box.
 
 Added:
@@ -76,11 +102,11 @@ Added:
   - Installing it needs one extra library, DFRobot_BMV080, added as a ZIP
     in the Arduino IDE (see the folder's README).
 
-v2.4.0 — 13 October 2026 (EASE summer school, not in the package)
------------------------------------------------------------------
+v2.4.0 — 13 October 2026 (test version, not in the package)
+-----------------------------------------------------------
 
-A separate firmware for the EASE summer school (November 2026), kept in
-firmware/EASE_ScoalaDeVara_2026-11/serial_wifi_v2_4_0. The boxes in
+A separate test firmware for the newer sensors, kept in
+serial_wifi_v2_4_0. The boxes in
 schools and the package stay on 2.3.0. The application does not show the
 new readings yet.
 
